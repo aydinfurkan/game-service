@@ -92,6 +92,7 @@ namespace GameService.Controller
             {
                 var activePlayers = _gameQuery.GetAllActivePlayers();
                 var ok = _tcpServer.Write(client, activePlayers);
+                Thread.Sleep(100);
                 if (!ok) break;
             }
         }
