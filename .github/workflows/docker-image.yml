@@ -1,0 +1,26 @@
+name: Docker Image CI
+on:    
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      CR_PAT: ${{ secrets.CR_PAT }}
+      IMAGE_URL: ghcr.io/aydinfurkan/gameservice:${{ github.run_number }}
+      CI_REGISTRY: ghcr.io
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: docker login
+        run: |
+          echo $CR_PAT | docker login $CI_REGISTRY -u ${{ github.run_id }} --password-stdin
+          
+      - name: docker build
+        run: |
+          docker build . --tag $IMAGE_URL
+          
+      - name: docker push
+        run: |
+          docker push $IMAGE_URL
+      
