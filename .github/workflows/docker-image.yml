@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CR_PAT: ${{ secrets.CR_PAT }}
-      IMAGE_URL: ghcr.io/aydinfurkan/gameservice:${{ github.run_number }}
+      IMAGE_URL: ghcr.io/aydinfurkan/game-service:${{ github.run_number }}
       CI_REGISTRY: ghcr.io
     steps:
       - uses: actions/checkout@v2
