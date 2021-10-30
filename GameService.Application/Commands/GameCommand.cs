@@ -30,10 +30,7 @@ namespace GameService.Commands
         
         public bool ChangePlayerPosition(Guid id, Position position)
         {
-            var player = _game.FindPlayerOrDefault(id);
-            if (player == null) return false;
-            player.Position = position;
-            return true;
+            return _game.ChangePlayerPosition(id, position);
         }
     }
 }

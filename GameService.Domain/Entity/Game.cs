@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using GameService.Domain.Components;
+using GameService.Domain.ValueObject;
 
 namespace GameService.Domain.Entity
 {
@@ -33,6 +34,11 @@ namespace GameService.Domain.Entity
         public List<Player> GetAllActivePlayers()
         {
             return _activePlayers.GetAllActivePlayers();
+        }
+
+        public bool ChangePlayerPosition(Guid id, Position position)
+        {
+            return _activePlayers.ChangePlayerPosition(id, position);
         }
     }
 }
