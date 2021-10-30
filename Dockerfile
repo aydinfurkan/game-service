@@ -2,7 +2,7 @@
 FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
 WORKDIR /app
 LABEL org.opencontainers.image.source="https://github.com/aydinfurkan/game-service"
-EXPOSE 5005
+EXPOSE 5000
 
 # Build layer
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
