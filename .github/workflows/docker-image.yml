@@ -27,14 +27,23 @@ jobs:
         run: |
           docker push $IMAGE_URL
           
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-           aws-region: us-east-2
+  Deploy:
+    needs: build
+    runs-on: ubuntu-latest
 
-      - name: Copy files to the test website with the AWS CLI
+    steps:
+      - uses: actions/checkout@v2 
+      
+      - name: Deploy in EC2
+        env:
+            PRIVATE_KEY: ${{ secrets.AWS_RSA_PRIVATE_KEY  }}
+            HOSTNAME : ${{ secrets.HOSTNAME  }}
+            USER_NAME : ${{ secrets.USER_NAME  }}
+
         run: |
-          aws s3 sync . s3://my-s3-test-website-bucket
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${AWS_ACCESS_KEY_ID} '
+
+            #Now we have got the access of EC2 and we will start the deploy .
+            ls
       
