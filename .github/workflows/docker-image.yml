@@ -1,17 +1,14 @@
 name: Docker Image CI
 on:    
   workflow_dispatch:
-
+env:
+  IMAGE_URL: ghcr.io/aydinfurkan/game-service:${{ github.run_number }}
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
       CR_PAT: ${{ secrets.CR_PAT }}
-      IMAGE_URL: ghcr.io/aydinfurkan/game-service:${{ github.run_number }}
       CI_REGISTRY: ghcr.io
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: us-east-2
     steps:
       - uses: actions/checkout@v2
       
@@ -44,6 +41,9 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i private_key $ACCESS_KEY_ID '
 
             #Now we have got the access of EC2 and we will start the deploy .
-            mkdir asd
+            sudo docker rm -vf $(sudo docker ps -a -q)
+            sudo docker rmi -f $(sudo docker images -a -q)
+            sudo docker pull $IMAGE_URL
+            sudo docker run -d -p 5000:5000 --name=server $(sudo docker images -a -q)
           '
       
