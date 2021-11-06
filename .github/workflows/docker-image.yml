@@ -43,7 +43,7 @@ jobs:
             #Now we have got the access of EC2 and we will start the deploy .
             sudo docker rm -vf $(sudo docker ps -a -q)
             sudo docker rmi -f $(sudo docker images -a -q)
-            sudo docker pull $IMAGE_URL
-            sudo docker run -d -p 5000:5000 --name=server $(sudo docker images -a -q)
+            echo sudo docker pull $IMAGE_URL
+            echo sudo docker run -d -p 5000:5000 --name=server $(sudo docker images -a -q)
           '
       
