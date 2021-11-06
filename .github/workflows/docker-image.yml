@@ -9,6 +9,9 @@ jobs:
       CR_PAT: ${{ secrets.CR_PAT }}
       IMAGE_URL: ghcr.io/aydinfurkan/game-service:${{ github.run_number }}
       CI_REGISTRY: ghcr.io
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: us-east-2
     steps:
       - uses: actions/checkout@v2
       
@@ -23,4 +26,15 @@ jobs:
       - name: docker push
         run: |
           docker push $IMAGE_URL
+          
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+           aws-access-key-id: $AWS_ACCESS_KEY_ID
+           aws-secret-access-key: $AWS_SECRET_ACCESS_KEY
+           aws-region: $AWS_REGION
+
+      - name: Copy files to the test website with the AWS CLI
+        run: |
+          aws s3 sync . s3://my-s3-test-website-bucket
       
