@@ -41,26 +41,30 @@ namespace GameService.Controller
 
         private void NewConnection(TcpClient client)
         {
-            var input = _tcpServer.Read(client);
-            if (ValidateId(input, out var id))
+            if (_tcpServer.HandShake(client))
             {
-                _gameCommand.SetPlayerActive(id);
+                var ok = _tcpServer.Read(client, out var input);
+                if (ValidateId(input, out var id))
+                {
+                    _gameCommand.SetPlayerActive(id);
                 
-                var streamTask = new Task(() => StreamClient(client, id));
-                var subscribeTask = new Task(() => SubscribeClient(client, id));
+                    var streamTask = new Task(() => StreamClient(client, id));
+                    var subscribeTask = new Task(() => SubscribeClient(client, id));
                 
-                streamTask.Start();
-                subscribeTask.Start();
+                    streamTask.Start();
+                    subscribeTask.Start();
                 
-                var index = Task.WaitAny(streamTask, subscribeTask);
+                    var index = Task.WaitAny(streamTask);
                 
-                _gameCommand.SetPlayerDeactivated(id);
+                    _gameCommand.SetPlayerDeactivated(id);
 
-                _logger.LogInformation($"Error client : {client.Client.RemoteEndPoint}");
-                streamTask.Dispose();
-                subscribeTask.Dispose();
+                    _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- Client Disconnected ({index}) : {client.Client.RemoteEndPoint}");
+                    streamTask.Dispose();
+                    subscribeTask.Dispose();
+                }
             }
             client.Close();
+            _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} is closing.");
         }
 
         private bool ValidateId(string input, out Guid id)
@@ -88,6 +92,7 @@ namespace GameService.Controller
 
         private void StreamClient(TcpClient client, Guid id)
         {
+            _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- Stream process start : {client.Client.RemoteEndPoint}");
             while (true)
             {
                 var activePlayers = _gameQuery.GetAllActivePlayers();
@@ -95,20 +100,24 @@ namespace GameService.Controller
                 Thread.Sleep(100);
                 if (!ok) break;
             }
+            _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- Stream process end : {client.Client.RemoteEndPoint}");
         }
         
         private void SubscribeClient(TcpClient client, Guid id)
         {
+            _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- Subscribe process start : {client.Client.RemoteEndPoint}");
             while (true)
             {
-                var input = _tcpServer.Read(client);
+                var ok = _tcpServer.Read(client, out var input);
             
                 var positionRequestModel = Newtonsoft.Json.JsonConvert.DeserializeObject<PositionRequestModel>(input);
 
                 if (positionRequestModel == null) continue;
             
-                var ok = _gameCommand.ChangePlayerPosition(id, positionRequestModel.ToDomainModel());
+                _gameCommand.ChangePlayerPosition(id, positionRequestModel.ToDomainModel());
+                if (!ok) break;
             }
+            _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- Subscribe process end : {client.Client.RemoteEndPoint}");
         }
     }
 }

@@ -1,6 +1,10 @@
-﻿using System.Net.Sockets;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
+using GameService.Protocol;
 using Microsoft.Extensions.Logging;
 
 namespace GameService.Controller
@@ -9,11 +13,13 @@ namespace GameService.Controller
     {
         private readonly ILogger _logger;
         private readonly TcpListener _listener;
+        private readonly IProtocol _protocol;
 
-        public TcpServer(ILogger logger, TcpListener tcpListener)
+        public TcpServer(ILogger logger, TcpListener tcpListener, IProtocol protocol)
         {
             _logger = logger;
             _listener = tcpListener;
+            _protocol = protocol;
         }
         
         public void Start()
@@ -28,40 +34,19 @@ namespace GameService.Controller
         {
             return _listener.AcceptTcpClient();
         }
-
         public bool Write(TcpClient client, object obj)
         {
-            try
-            {
-                var stream = client.GetStream();
-                var str = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
-                var bytes = Encoding.Default.GetBytes(str);
-
-                stream.Write(bytes, 0, bytes.Length);
-
-                _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- Writing to client : {client.Client.RemoteEndPoint}");
-                return true;
-            }
-            catch
-            {
-                _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- Connection Error : {client.Client.RemoteEndPoint}");
-                return false;
-            }
+            var str = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+            return _protocol.Write(client, str);
+        }
+        public bool Read(TcpClient client, out string input)
+        {
+            return _protocol.Read(client, out input);
+        }
+        public bool HandShake(TcpClient client)
+        {
+            return _protocol.HandShake(client);
         }
         
-        public string Read(TcpClient client)
-        {
-            var stream = client.GetStream();
-
-            _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- Listening for client : {client.Client.RemoteEndPoint}");
-            
-            var data = new byte[client.ReceiveBufferSize];
-            var bytes = stream.Read(data, 0, data.Length);
-            var input = Encoding.ASCII.GetString(data, 0, bytes);
-            
-            _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- Received input : {input}");
-
-            return input;
-        }
     }
 }
