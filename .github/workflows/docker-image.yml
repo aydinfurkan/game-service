@@ -44,6 +44,6 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i private_key $ACCESS_KEY_ID '
 
             #Now we have got the access of EC2 and we will start the deploy .
-            ls
+            mkdir asd
           '
       
