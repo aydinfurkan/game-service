@@ -97,7 +97,7 @@ namespace GameService.Controller
             {
                 var activePlayers = _gameQuery.GetAllActivePlayers();
                 var ok = _tcpServer.Write(client, activePlayers);
-                Thread.Sleep(100);
+                Thread.Sleep(50);
                 if (!ok) break;
             }
             _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- Stream process end : {client.Client.RemoteEndPoint}");
