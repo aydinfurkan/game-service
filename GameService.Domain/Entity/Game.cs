@@ -40,5 +40,10 @@ namespace GameService.Domain.Entity
         {
             return _activePlayers.ChangePlayerPosition(id, position);
         }
+
+        public bool ChangePlayerQuaternion(Guid id, Quaternion quaternion)
+        {
+            return _activePlayers.ChangePlayerQuaternion(id, quaternion);
+        }
     }
 }

@@ -59,5 +59,16 @@ namespace GameService.Domain.Components
                 return true;
             }
         }
+
+        public bool ChangePlayerQuaternion(Guid id, Quaternion quaternion)
+        {
+            lock (_lockObj)
+            {
+                var ok = _playerList.TryGetValue(id, out var player);
+                if (player == null) return false;
+                player.Quaternion = quaternion;
+                return true;
+            }
+        }
     }
 }

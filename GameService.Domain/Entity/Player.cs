@@ -7,11 +7,13 @@ namespace GameService.Domain.Entity
     {
         public Guid Id;
         public Position Position;
+        public Quaternion Quaternion;
 
-        public Player(Guid id, Position position)
+        public Player(Guid id, Position position, Quaternion quaternion)
         {
             Id = id;
             Position = position;
+            Quaternion = quaternion;
         }
     }
 }

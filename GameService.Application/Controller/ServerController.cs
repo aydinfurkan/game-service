@@ -3,7 +3,6 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using GameService.Commands;
-using GameService.Controller.RequestModel;
 using GameService.Queries;
 using Microsoft.Extensions.Logging;
 
@@ -110,11 +109,11 @@ namespace GameService.Controller
             {
                 var ok = _tcpServer.Read(client, out var input);
             
-                var positionRequestModel = Newtonsoft.Json.JsonConvert.DeserializeObject<PositionRequestModel>(input);
-
-                if (positionRequestModel == null) continue;
+                var requestModel = Newtonsoft.Json.JsonConvert.DeserializeObject<RequestModel.RequestModel>(input);
+                if (requestModel == null) continue;
             
-                _gameCommand.ChangePlayerPosition(id, positionRequestModel.ToDomainModel());
+                _gameCommand.ChangePlayerPosition(id, requestModel.Position.ToDomainModel());
+                _gameCommand.ChangePlayerQuaternion(id, requestModel.Quaternion.ToDomainModel());
                 if (!ok) break;
             }
             _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- Subscribe process end : {client.Client.RemoteEndPoint}");

@@ -9,7 +9,7 @@ namespace GameService.AntiCorruption
     {
         public Player GetPlayer(Guid id)
         {
-            return new Player(id, new Position(0, 0, 0));
+            return new Player(id, new Position(0, 0, 0), new Quaternion(0, 0, 0, 0));
         }
     }
 }

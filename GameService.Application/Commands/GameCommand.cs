@@ -32,5 +32,9 @@ namespace GameService.Commands
         {
             return _game.ChangePlayerPosition(id, position);
         }
+        public bool ChangePlayerQuaternion(Guid id, Quaternion quaternion)
+        {
+            return _game.ChangePlayerQuaternion(id, quaternion);
+        }
     }
 }
