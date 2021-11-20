@@ -4,6 +4,8 @@ on:
     branches: [ master ]
   #workflow_dispatch:
 env:
+  DOCKER_TAG: game-service
+  DOCKER_PORT: 5000:80
   IMAGE_URL: ghcr.io/aydinfurkan/game-service:${{ github.run_number }}
 jobs:
   build:
@@ -43,9 +45,9 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i private_key $ACCESS_KEY_ID '
 
             #Now we have got the access of EC2 and we will start the deploy .
-            sudo docker rm -vf $(sudo docker ps -a -q)
-            sudo docker rmi -f $(sudo docker images -a -q)
+            sudo docker rm -vf $DOCKER_TAG
+            sudo docker image prune -af
             sudo docker pull "'$IMAGE_URL'" 
-            sudo docker run -d -p 5000:5000 --name=server $(sudo docker images -a -q)
+            sudo docker run -d -p "'$DOCKER_PORT'" --name="'$DOCKER_TAG'" "'$IMAGE_URL'"
           '
       
