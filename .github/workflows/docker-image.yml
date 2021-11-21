@@ -45,7 +45,7 @@ jobs:
 
             #Now we have got the access of EC2 and we will start the deploy .
             echo "'$CR_PAT'" | sudo docker login "'$CI_REGISTRY'" -u ${{ github.repository_owner }} --password-stdin
-            sudo docker rm -vf $DOCKER_TAG
+            sudo docker rm -vf "'$DOCKER_TAG'"
             sudo docker image prune -af
             sudo docker pull "'$IMAGE_URL'" 
             sudo docker run -d -p "'$DOCKER_PORT'" --name="'$DOCKER_TAG'" "'$IMAGE_URL'"
