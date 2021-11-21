@@ -18,7 +18,7 @@ jobs:
       
       - name: docker login
         run: |
-          echo $CR_PAT | docker login $CI_REGISTRY -u ${{ github.run_id }} --password-stdin
+          echo $CR_PAT | docker login $CI_REGISTRY -u ${{ github.repository_owner }} --password-stdin
           
       - name: docker build
         run: |
