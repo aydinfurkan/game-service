@@ -1,6 +1,4 @@
 using System;
-using CoreLib.HttpClients.Interfaces;
-using GameService.Domain.Abstracts.AntiCorruption;
 using GameService.Domain.Entity;
 using GameService.Domain.ValueObject;
 

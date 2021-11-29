@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using CoreLib.Mongo;
-using MongoDB.Bson.Serialization.Attributes;
 
 namespace GameService.AntiCorruption.UserDomain
 {
