@@ -1,3 +1,4 @@
+using System.Net.Http;
 using GameService.Domain.Abstracts.AntiCorruption;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,7 +8,7 @@ namespace GameService.AntiCorruption
     {
         public static void AddAntiCorruptionModule(this IServiceCollection services)
         {
-            services.AddSingleton<IPlayerAntiCorruption, PlayerAntiCorruption>();
+            services.AddTransient<IUserAntiCorruption, UserAntiCorruption>();
         }
     }
 }

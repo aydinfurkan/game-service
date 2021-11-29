@@ -8,42 +8,42 @@ namespace GameService.Domain.Entity
     public class Game
     {
         private Guid _id;
-        private readonly ActivePlayers _activePlayers;
+        private readonly ActiveCharacters _activeCharacters;
 
         public Game()
         {
             _id = Guid.NewGuid();
-            _activePlayers = new ActivePlayers();
+            _activeCharacters = new ActiveCharacters();
         }
 
-        public bool AddPlayer(Player player)
+        public bool AddCharacter(Character character)
         {
-            return _activePlayers.Add(player);
+            return _activeCharacters.Add(character);
         }
         
-        public bool DeletePlayer(Player player)
+        public bool DeleteCharacter(Character character)
         {
-            return _activePlayers.Delete(player);
+            return _activeCharacters.Delete(character);
         }
         
-        public Player FindPlayerOrDefault(Guid id)
+        public Character FindCharacterOrDefault(Guid id)
         {
-            return _activePlayers.FindOrDefault(id);
+            return _activeCharacters.FindOrDefault(id);
         }
         
-        public List<Player> GetAllActivePlayers()
+        public List<Character> GetAllActiveCharacters()
         {
-            return _activePlayers.GetAllActivePlayers();
+            return _activeCharacters.GetAllActiveCharacters();
         }
 
-        public bool ChangePlayerPosition(Guid id, Position position)
+        public bool ChangeCharacterPosition(Guid id, Position position)
         {
-            return _activePlayers.ChangePlayerPosition(id, position);
+            return _activeCharacters.ChangeCharacterPosition(id, position);
         }
 
-        public bool ChangePlayerQuaternion(Guid id, Quaternion quaternion)
+        public bool ChangeCharacterQuaternion(Guid id, Quaternion quaternion)
         {
-            return _activePlayers.ChangePlayerQuaternion(id, quaternion);
+            return _activeCharacters.ChangeCharacterQuaternion(id, quaternion);
         }
     }
 }

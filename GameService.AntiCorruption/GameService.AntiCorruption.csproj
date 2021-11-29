@@ -9,4 +9,8 @@
       <ProjectReference Include="..\GameService.Domain\GameService.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="CoreLib" Version="0.0.11" />
+    </ItemGroup>
+
 </Project>

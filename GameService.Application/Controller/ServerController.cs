@@ -1,9 +1,14 @@
 using System;
+using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using GameService.Commands;
+using GameService.Domain.Abstracts.AntiCorruption;
+using GameService.Domain.Entity;
+using GameService.Domain.ValueObject;
 using GameService.Queries;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace GameService.Controller
@@ -12,15 +17,17 @@ namespace GameService.Controller
     {
         private readonly ILogger _logger;
         private readonly TcpServer _tcpServer;
+        private readonly IUserAntiCorruption _userAntiCorruption;
         private readonly GameQuery _gameQuery;
         private readonly GameCommand _gameCommand;
 
-        public ServerController(ILogger logger, TcpServer tcpServer, GameQuery gameQuery, GameCommand gameCommand)
+        public ServerController(ILogger logger, TcpServer tcpServer, GameQuery gameQuery, GameCommand gameCommand, IUserAntiCorruption userAntiCorruption)
         {
+            _logger = logger;
             _tcpServer = tcpServer;
             _gameQuery = gameQuery;
             _gameCommand = gameCommand;
-            _logger = logger;
+            _userAntiCorruption = userAntiCorruption;
         }
 
         public void Init(CancellationToken cancellationToken)
@@ -31,33 +38,35 @@ namespace GameService.Controller
             while (!cancellationToken.IsCancellationRequested)
             {
                 var client = _tcpServer.AcceptClient();
-                Task.Run(() => NewConnection(client), cancellationToken);
+                Task.Run(async () => await NewConnection(client), cancellationToken);
             }
             
             _tcpServer.Stop();
             _logger.LogInformation("TcpServer stopped.");
         }
 
-        private void NewConnection(TcpClient client)
+        private async Task NewConnection(TcpClient client)
         {
             if (_tcpServer.HandShake(client))
             {
-                var ok = _tcpServer.Read(client, out var input);
-                if (ValidateId(input, out var id))
+                var ok = _tcpServer.Read(client, out var pToken);
+                var character = await _userAntiCorruption.VerifyUser(pToken);
+                if (character != null) 
                 {
-                    _gameCommand.SetPlayerActive(id);
-                
-                    var streamTask = new Task(() => StreamClient(client, id));
-                    var subscribeTask = new Task(() => SubscribeClient(client, id));
-                
+                    _gameCommand.SetCharacterActive(character);
+
+                    var streamTask = new Task(() => StreamClient(client, character.Id));
+                    var subscribeTask = new Task(() => SubscribeClient(client, character.Id));
+
                     streamTask.Start();
                     subscribeTask.Start();
-                
-                    var index = Task.WaitAny(streamTask);
-                
-                    _gameCommand.SetPlayerDeactivated(id);
 
-                    _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- Client Disconnected ({index}) : {client.Client.RemoteEndPoint}");
+                    var index = Task.WaitAny(streamTask);
+
+                    _gameCommand.SetCharacterDeactivated(character);
+
+                    _logger.LogInformation(
+                        $"Thread : {Thread.CurrentThread.ManagedThreadId} --- Client Disconnected ({index}) : {client.Client.RemoteEndPoint}");
                     streamTask.Dispose();
                     subscribeTask.Dispose();
                 }
@@ -66,36 +75,13 @@ namespace GameService.Controller
             _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} is closing.");
         }
 
-        private bool ValidateId(string input, out Guid id)
-        {
-            if (!Guid.TryParse(input, out id))
-            {
-                _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- Wrong Input");
-                return false;
-            }
-            
-            if (!_gameQuery.IsIdExist(id))
-            {
-                _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- Id is not exist.");
-                return false;
-            }
-
-            if (_gameQuery.IsPlayerActive(id))
-            {
-                _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- Client already connected.");
-                return false;
-            }
-            
-            return true;
-        }
-
         private void StreamClient(TcpClient client, Guid id)
         {
             _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- Stream process start : {client.Client.RemoteEndPoint}");
             while (true)
             {
-                var activePlayers = _gameQuery.GetAllActivePlayers();
-                var ok = _tcpServer.Write(client, activePlayers);
+                var activeCharacters = _gameQuery.GetAllActiveCharacters();
+                var ok = _tcpServer.Write(client, activeCharacters);
                 Thread.Sleep(50);
                 if (!ok) break;
             }
@@ -112,8 +98,8 @@ namespace GameService.Controller
                 var requestModel = Newtonsoft.Json.JsonConvert.DeserializeObject<RequestModel.RequestModel>(input);
                 if (requestModel == null) continue;
             
-                _gameCommand.ChangePlayerPosition(id, requestModel.Position.ToDomainModel());
-                _gameCommand.ChangePlayerQuaternion(id, requestModel.Quaternion.ToDomainModel());
+                _gameCommand.ChangeCharacterPosition(id, requestModel.Position.ToDomainModel());
+                _gameCommand.ChangeCharacterQuaternion(id, requestModel.Quaternion.ToDomainModel());
                 if (!ok) break;
             }
             _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- Subscribe process end : {client.Client.RemoteEndPoint}");

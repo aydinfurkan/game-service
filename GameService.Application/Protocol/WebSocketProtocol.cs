@@ -60,12 +60,12 @@ namespace GameService.Protocol
                     return true;
                 case 126:
                     // was ToUInt16(bytes, offset) but the result is incorrect TODO
-                    //msglen = BitConverter.ToUInt16(new [] { bytes[3], bytes[2] }, 0);
-                    //offset = 4;
+                    msgLen = BitConverter.ToUInt16(new [] { bytes[3], bytes[2] });
+                    offset = 4;
                     break;
                 case 127:
                     // i don't really know the byte order, please edit this TODO
-                    // msglen = BitConverter.ToUInt64(new byte[] { bytes[5], bytes[4], bytes[3], bytes[2], bytes[9], bytes[8], bytes[7], bytes[6] }, 0);
+                    // msgLen = BitConverter.ToUInt16(new [] { bytes[5], bytes[4], bytes[3], bytes[2], bytes[9], bytes[8], bytes[7], bytes[6] });
                     // offset = 10;
                     break;
             }

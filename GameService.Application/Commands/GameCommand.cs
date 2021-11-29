@@ -1,4 +1,5 @@
 using System;
+using CoreLib.HttpClients.Interfaces;
 using GameService.Domain.Abstracts.AntiCorruption;
 using GameService.Domain.Entity;
 using GameService.Domain.ValueObject;
@@ -7,34 +8,30 @@ namespace GameService.Commands
 {
     public class GameCommand
     {
-        private Game _game;
-        private readonly IPlayerAntiCorruption _playerAntiCorruption;
+        private readonly Game _game;
 
-        public GameCommand(Game game, IPlayerAntiCorruption playerAntiCorruption)
+        public GameCommand(Game game)
         {
             _game = game;
-            _playerAntiCorruption = playerAntiCorruption;
         }
 
-        public bool SetPlayerActive(Guid id)
+        public bool SetCharacterActive(Character character)
         {
-            var player = _playerAntiCorruption.GetPlayer(id);
-            return _game.AddPlayer(player);
+            return _game.AddCharacter(character);
         }
         
-        public bool SetPlayerDeactivated(Guid id)
+        public bool SetCharacterDeactivated(Character character)
         {
-            var player = _playerAntiCorruption.GetPlayer(id);
-            return _game.DeletePlayer(player);
+            return _game.DeleteCharacter(character);
         }
         
-        public bool ChangePlayerPosition(Guid id, Position position)
+        public bool ChangeCharacterPosition(Guid id, Position position)
         {
-            return _game.ChangePlayerPosition(id, position);
+            return _game.ChangeCharacterPosition(id, position);
         }
-        public bool ChangePlayerQuaternion(Guid id, Quaternion quaternion)
+        public bool ChangeCharacterQuaternion(Guid id, Quaternion quaternion)
         {
-            return _game.ChangePlayerQuaternion(id, quaternion);
+            return _game.ChangeCharacterQuaternion(id, quaternion);
         }
     }
 }

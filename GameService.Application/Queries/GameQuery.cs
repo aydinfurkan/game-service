@@ -18,14 +18,14 @@ namespace GameService.Queries
             return true;
         }
         
-        public bool IsPlayerActive(Guid id)
+        public bool IsCharacterActive(Guid id)
         {
-            return _game.FindPlayerOrDefault(id) != null;
+            return _game.FindCharacterOrDefault(id) != null;
         }
         
-        public List<Player> GetAllActivePlayers()
+        public List<Character> GetAllActiveCharacters()
         {
-            return _game.GetAllActivePlayers();
+            return _game.GetAllActiveCharacters();
         }
     }
 }
