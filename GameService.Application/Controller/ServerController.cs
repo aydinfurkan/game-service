@@ -91,6 +91,8 @@ namespace GameService.Controller
             
                 _gameCommand.ChangeCharacterPosition(id, requestModel.Position.ToDomainModel());
                 _gameCommand.ChangeCharacterQuaternion(id, requestModel.Quaternion.ToDomainModel());
+                _gameCommand.ChangeMoveState(id, requestModel.MoveState);
+                _gameCommand.ChangeJumpState(id, requestModel.JumpState);
                 if (!ok) break;
             }
             _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- Subscribe process end : {gameClient.TcpClient.Client.RemoteEndPoint}");
