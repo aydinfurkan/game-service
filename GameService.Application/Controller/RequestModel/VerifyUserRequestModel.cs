@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 
-namespace GameService.AntiCorruption.UserDomain
+namespace GameService.Controller.RequestModel
 {
-    public class Character
+    public class VerifyUserRequestModel
     {
+        public string Token { get; set; }
         public Guid CharacterId { get; set; }
         public string CharacterName { get; set; }
         public string CharacterClass { get; set; }

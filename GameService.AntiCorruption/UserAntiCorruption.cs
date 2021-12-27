@@ -2,11 +2,9 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using GameService.AntiCorruption.UserDomain;
 using GameService.Domain.Abstracts.AntiCorruption;
-using GameService.Domain.ValueObject;
 using Newtonsoft.Json;
-using Character = GameService.Domain.Entity.Character;
+using User = GameService.Domain.Entity.User;
 
 namespace GameService.AntiCorruption
 {
@@ -19,7 +17,7 @@ namespace GameService.AntiCorruption
         //     _httpClient = httpClient; // TODO fix transient
         // }
         
-        public async Task<Character> VerifyUser(string pToken)
+        public async Task<User> VerifyUser(string pToken)
         {
             using var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", pToken);
@@ -31,7 +29,7 @@ namespace GameService.AntiCorruption
 
             var user = JsonConvert.DeserializeObject<User>(data);
 
-            return new Character(user.CharacterList[0].CharacterId, new Position(0, 0, 0), new Quaternion(0, 0, 0, 0));
+            return user;
         }
 
     }

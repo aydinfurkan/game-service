@@ -16,7 +16,7 @@ namespace GameService
             services.AddSingleton<GameQuery>();
             services.AddSingleton(new TcpListener(IPAddress.Any, 5000));
             services.AddSingleton<IProtocol, WebSocketProtocol>();
-            services.AddSingleton<TcpServer>();
+            services.AddSingleton<GameServer>();
             services.AddSingleton<ServerController>();
         }
     }

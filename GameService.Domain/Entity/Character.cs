@@ -5,13 +5,17 @@ namespace GameService.Domain.Entity
 {
     public class Character
     {
-        public Guid Id;
+        public Guid CharacterId;
+        public string CharacterName;
+        public string CharacterClass;
         public Position Position;
         public Quaternion Quaternion;
 
-        public Character(Guid id, Position position, Quaternion quaternion)
+        public Character(Guid characterId, string characterName, string characterClass, Position position, Quaternion quaternion)
         {
-            Id = id;
+            CharacterId = characterId;
+            CharacterName = characterName;
+            CharacterClass = characterClass;
             Position = position;
             Quaternion = quaternion;
         }

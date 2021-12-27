@@ -20,7 +20,7 @@ namespace GameService.Domain.Components
         {
             lock (_lockObj)
             {
-                return _characterList.TryAdd(character.Id, character);
+                return _characterList.TryAdd(character.CharacterId, character);
             }
         }
 
@@ -28,7 +28,7 @@ namespace GameService.Domain.Components
         {
             lock (_lockObj)
             {
-                return _characterList.Remove(character.Id);
+                return _characterList.Remove(character.CharacterId);
             }
         }
 
