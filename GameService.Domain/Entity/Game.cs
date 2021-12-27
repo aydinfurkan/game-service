@@ -45,5 +45,13 @@ namespace GameService.Domain.Entity
         {
             return _activeCharacters.ChangeCharacterQuaternion(id, quaternion);
         }
+        public bool ChangeMoveState(Guid id, string moveState)
+        {
+            return _activeCharacters.ChangeMoveState(id, moveState);
+        }
+        public bool ChangeJumpState(Guid id, int jumpState)
+        {
+            return _activeCharacters.ChangeJumpState(id, jumpState);
+        }
     }
 }

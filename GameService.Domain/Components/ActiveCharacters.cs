@@ -70,5 +70,25 @@ namespace GameService.Domain.Components
                 return true;
             }
         }
+        public bool ChangeMoveState(Guid id, string moveState)
+        {
+            lock (_lockObj)
+            {
+                var ok = _characterList.TryGetValue(id, out var character);
+                if (character == null) return false;
+                character.MoveState = moveState;
+                return true;
+            }
+        }
+        public bool ChangeJumpState(Guid id, int jumpState)
+        {
+            lock (_lockObj)
+            {
+                var ok = _characterList.TryGetValue(id, out var character);
+                if (character == null) return false;
+                character.JumpState = jumpState;
+                return true;
+            }
+        }
     }
 }

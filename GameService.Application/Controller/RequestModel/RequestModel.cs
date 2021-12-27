@@ -7,7 +7,8 @@ namespace GameService.Controller.RequestModel
     {
         public PositionRequestModel Position { get; set; }
         public QuaternionRequestModel Quaternion { get; set; }
-        
+        public string MoveState { get; set; }
+        public int JumpState { get; set; }
     }
 
     public class PositionRequestModel

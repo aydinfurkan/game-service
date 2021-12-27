@@ -31,5 +31,13 @@ namespace GameService.Commands
         {
             return _game.ChangeCharacterQuaternion(id, quaternion);
         }
+        public bool ChangeMoveState(Guid id, string moveState)
+        {
+            return _game.ChangeMoveState(id, moveState);
+        }
+        public bool ChangeJumpState(Guid id, int jumpState)
+        {
+            return _game.ChangeJumpState(id, jumpState);
+        }
     }
 }

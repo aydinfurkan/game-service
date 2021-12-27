@@ -10,6 +10,8 @@ namespace GameService.Domain.Entity
         public string CharacterClass;
         public Position Position;
         public Quaternion Quaternion;
+        public string MoveState;
+        public int JumpState;
 
         public Character(Guid characterId, string characterName, string characterClass, Position position, Quaternion quaternion)
         {
@@ -18,6 +20,8 @@ namespace GameService.Domain.Entity
             CharacterClass = characterClass;
             Position = position;
             Quaternion = quaternion;
+            MoveState = "";
+            JumpState = 0;
         }
     }
 }
