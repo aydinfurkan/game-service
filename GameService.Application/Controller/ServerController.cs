@@ -37,7 +37,7 @@ namespace GameService.Controller
             {
                 var gameClient = await _gameServer.AcceptClient();
                 if (gameClient != null)
-                    await Task.Run(() => NewConnection(gameClient), cancellationToken);
+                    Task.Run(() => NewConnection(gameClient), cancellationToken);
             }
             
             _gameServer.Stop();
