@@ -68,8 +68,8 @@ namespace GameService.Controller
             finally
             {
                 _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- Stream and Subscribe Tasks are disposing.");
+                _gameCommand.SetCharacterDeactivated(gameClient.Character); 
                 _gameServer.CloseClient(gameClient);
-                _gameCommand.SetCharacterDeactivated(gameClient.Character);
                 streamTask.Dispose();
                 subscribeTask.Dispose();
             }

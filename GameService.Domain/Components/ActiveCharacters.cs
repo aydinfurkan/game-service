@@ -20,6 +20,7 @@ namespace GameService.Domain.Components
         {
             lock (_lockObj)
             {
+                Console.WriteLine($"Added : {character.CharacterId}");
                 return _characterList.TryAdd(character.CharacterId, character);
             }
         }
@@ -28,6 +29,7 @@ namespace GameService.Domain.Components
         {
             lock (_lockObj)
             {
+                Console.WriteLine($"Removed : {character.CharacterId}");
                 return _characterList.Remove(character.CharacterId);
             }
         }

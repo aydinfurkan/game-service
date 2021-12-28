@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -82,7 +83,9 @@ namespace GameService.Controller
         }
         private void CancelFormerConnection(User user)
         {
-            _gameClientList.FirstOrDefault(x => x.User.Id == user.Id)?.CancellationTokenSource.Cancel();
+            var gameClient = _gameClientList.FirstOrDefault(x => x.User.Id == user.Id);
+            gameClient?.CancellationTokenSource.Cancel();
+            while (gameClient != null && gameClient.TcpClient.Connected) { }
         }
         
     }
