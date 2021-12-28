@@ -1,11 +1,7 @@
 using System;
-using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using GameService.Commands;
-using GameService.Domain.Abstracts.AntiCorruption;
-using GameService.Domain.Entity;
-using GameService.Domain.ValueObject;
 using GameService.Queries;
 using Microsoft.Extensions.Logging;
 
@@ -15,29 +11,29 @@ namespace GameService.Controller
     {
         private readonly ILogger _logger;
         private readonly GameServer _gameServer;
-        private readonly IUserAntiCorruption _userAntiCorruption;
         private readonly GameQuery _gameQuery;
         private readonly GameCommand _gameCommand;
 
-        public ServerController(ILogger logger, GameServer gameServer, GameQuery gameQuery, GameCommand gameCommand, IUserAntiCorruption userAntiCorruption)
+        public ServerController(ILogger logger, GameServer gameServer, GameQuery gameQuery, GameCommand gameCommand)
         {
             _logger = logger;
             _gameServer = gameServer;
             _gameQuery = gameQuery;
             _gameCommand = gameCommand;
-            _userAntiCorruption = userAntiCorruption;
         }
 
-        public async Task Init(CancellationToken cancellationToken)
+        public void Init(CancellationToken cancellationToken)
         {
             _gameServer.Start();
             _logger.LogInformation("TcpServer started.");
             
             while (!cancellationToken.IsCancellationRequested)
             {
-                var gameClient = await _gameServer.AcceptClient();
-                if (gameClient != null)
-                    Task.Run(() => NewConnection(gameClient), cancellationToken);
+                var gameClientTask = Task.Run(async () => await _gameServer.AcceptClient(),cancellationToken);
+                var gameClient = gameClientTask.Result;
+                if (gameClient == null) continue;
+                
+                Task.Run(() => NewConnection(gameClient), gameClient.CancellationTokenSource.Token);
             }
             
             _gameServer.Stop();
@@ -48,13 +44,13 @@ namespace GameService.Controller
         {
             _gameCommand.SetCharacterActive(gameClient.Character);
             
-            var streamTask = new Task(() => StreamClient(gameClient, gameClient.Character.CharacterId));
-            var subscribeTask = new Task(() => SubscribeClient(gameClient, gameClient.Character.CharacterId));
+            var streamTask = new Task(() => StreamClient(gameClient, gameClient.Character.CharacterId), gameClient.CancellationTokenSource.Token);
+            var subscribeTask = new Task(() => SubscribeClient(gameClient, gameClient.Character.CharacterId), gameClient.CancellationTokenSource.Token);
 
             streamTask.Start();
             subscribeTask.Start();
 
-            var index = Task.WaitAny(streamTask);
+            var index = Task.WaitAny(new[] {streamTask, subscribeTask}, gameClient.CancellationTokenSource.Token);
 
             _gameCommand.SetCharacterDeactivated(gameClient.Character);
 

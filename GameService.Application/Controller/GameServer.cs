@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using GameService.Controller.RequestModel;
 using GameService.Domain.Abstracts.AntiCorruption;
 using GameService.Domain.Entity;
-using GameService.Domain.ValueObject;
 using GameService.Protocol;
 using Microsoft.Extensions.Logging;
 
@@ -75,11 +73,16 @@ namespace GameService.Controller
         private async Task<(User, Character)> VerifyUser(VerifyUserRequestModel request)
         {
             var user = await _userAntiCorruption.VerifyUser(request.Token);
+            CancelFormerConnection(user);
             var character = user.CharacterList.FirstOrDefault(x =>
                 x.CharacterId == request.CharacterId &&
                 x.CharacterName == request.CharacterName &&
                 x.CharacterClass == request.CharacterClass);
             return (user, character);
+        }
+        private void CancelFormerConnection(User user)
+        {
+            _gameClientList.FirstOrDefault(x => x.User.Id == user.Id)?.CancellationTokenSource.Cancel();
         }
         
     }
