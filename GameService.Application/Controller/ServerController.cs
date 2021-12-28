@@ -33,7 +33,7 @@ namespace GameService.Controller
                 var gameClient = gameClientTask.Result;
                 if (gameClient == null) continue;
                 
-                Task.Run(() => NewConnection(gameClient), gameClient.CancellationTokenSource.Token);
+                Task.Run(() => NewConnection(gameClient), cancellationToken);
             }
             
             _gameServer.Stop();
