@@ -42,6 +42,7 @@ namespace GameService.Controller
             if (!_protocol.HandShake(tcpClient)) return null;
             
             var gameClient = await VerifyClient(tcpClient);
+            if (gameClient == null) return null;
             
             _gameClientList.Add(gameClient);
             return gameClient;

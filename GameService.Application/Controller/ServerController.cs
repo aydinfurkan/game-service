@@ -31,6 +31,7 @@ namespace GameService.Controller
             {
                 try
                 {
+                    _logger.LogInformation("AcceptClient started.");
                     var gameClientTask = Task.Run(async () => await _gameServer.AcceptClient(), cancellationToken);
                     var gameClient = gameClientTask.Result;
                     if (gameClient == null) continue;
