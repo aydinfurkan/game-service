@@ -27,7 +27,7 @@ namespace GameService
             }
             catch(Exception exception)
             {
-                _logger.LogError(exception.Message);
+                _logger.LogError("GameService exception : " + exception.Message);
             }
 
             _logger.LogInformation("GameService Exited.");

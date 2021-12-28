@@ -29,11 +29,17 @@ namespace GameService.Controller
             
             while (!cancellationToken.IsCancellationRequested)
             {
-                var gameClientTask = Task.Run(async () => await _gameServer.AcceptClient(),cancellationToken);
-                var gameClient = gameClientTask.Result;
-                if (gameClient == null) continue;
-                
-                Task.Run(() => NewConnection(gameClient), cancellationToken);
+                try
+                {
+                    var gameClientTask = Task.Run(async () => await _gameServer.AcceptClient(), cancellationToken);
+                    var gameClient = gameClientTask.Result;
+                    if (gameClient == null) continue;
+                    Task.Run(() => NewConnection(gameClient), cancellationToken);
+                }
+                catch(Exception exception)
+                {
+                    _logger.LogError("TcpServer exception : " + exception.Message);
+                }
             }
             
             _gameServer.Stop();
@@ -57,7 +63,6 @@ namespace GameService.Controller
             _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- Client Disconnected ({index}) : {gameClient.TcpClient.Client.RemoteEndPoint}");
             
             _gameServer.CloseClient(gameClient);
-            _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} is closing.");
             streamTask.Dispose();
             subscribeTask.Dispose();
         }
