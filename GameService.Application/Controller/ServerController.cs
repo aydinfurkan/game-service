@@ -49,22 +49,31 @@ namespace GameService.Controller
         private void NewConnection(GameClient gameClient)
         {
             _gameCommand.SetCharacterActive(gameClient.Character);
-            
-            var streamTask = new Task(() => StreamClient(gameClient, gameClient.Character.CharacterId), gameClient.CancellationTokenSource.Token);
-            var subscribeTask = new Task(() => SubscribeClient(gameClient, gameClient.Character.CharacterId), gameClient.CancellationTokenSource.Token);
 
-            streamTask.Start();
-            subscribeTask.Start();
+            var streamTask = new Task(() => StreamClient(gameClient, gameClient.Character.CharacterId),
+                gameClient.CancellationTokenSource.Token);
+            var subscribeTask = new Task(() => SubscribeClient(gameClient, gameClient.Character.CharacterId),
+                gameClient.CancellationTokenSource.Token);
+            try
+            {
+                streamTask.Start();
+                subscribeTask.Start();
+                Task.WaitAny(new[] {streamTask, subscribeTask}, gameClient.CancellationTokenSource.Token);
+            }
+            catch(Exception e)
+            {
+                _logger.LogInformation(
+                    $"Thread : {Thread.CurrentThread.ManagedThreadId} --- Client Disconnected with message ({e.Message}) : {gameClient.TcpClient.Client.RemoteEndPoint}");
+            }
+            finally
+            {
+                _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- Stream and Subscribe Tasks are disposing.");
+                _gameServer.CloseClient(gameClient);
+                _gameCommand.SetCharacterDeactivated(gameClient.Character);
+                streamTask.Dispose();
+                subscribeTask.Dispose();
+            }
 
-            var index = Task.WaitAny(new[] {streamTask, subscribeTask}, gameClient.CancellationTokenSource.Token);
-
-            _gameCommand.SetCharacterDeactivated(gameClient.Character);
-
-            _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- Client Disconnected ({index}) : {gameClient.TcpClient.Client.RemoteEndPoint}");
-            
-            _gameServer.CloseClient(gameClient);
-            streamTask.Dispose();
-            subscribeTask.Dispose();
         }
 
         private void StreamClient(GameClient gameClient, Guid id)
