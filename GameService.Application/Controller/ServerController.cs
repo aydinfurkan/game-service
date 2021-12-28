@@ -56,10 +56,10 @@ namespace GameService.Controller
 
             _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- Client Disconnected ({index}) : {gameClient.TcpClient.Client.RemoteEndPoint}");
             
-            streamTask.Dispose();
-            subscribeTask.Dispose();
             _gameServer.CloseClient(gameClient);
             _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} is closing.");
+            streamTask.Dispose();
+            subscribeTask.Dispose();
         }
 
         private void StreamClient(GameClient gameClient, Guid id)
