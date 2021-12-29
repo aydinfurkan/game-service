@@ -113,7 +113,7 @@ namespace GameService.Controller
         {
             while(true)
             {
-                await Task.Delay(10000);
+                await Task.Delay(5*60*1000);
                 _logger.LogInformation(EventId.ThreadCount,$"Working thread count : {System.Diagnostics.Process.GetCurrentProcess().Threads.Count}");
             }
         }
