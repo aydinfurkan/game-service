@@ -1,25 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using GameService.Controller.RequestModel;
 using GameService.Domain.Abstracts.AntiCorruption;
 using GameService.Domain.Entity;
+using GameService.Infrastructure.Logger;
 using GameService.Protocol;
-using Microsoft.Extensions.Logging;
 
 namespace GameService.Controller
 {
     public class GameServer
     {
-        private readonly ILogger _logger;
+        private readonly IPLogger<GameServer> _logger;
         private readonly TcpListener _listener;
         private readonly IProtocol _protocol;
         private readonly List<GameClient> _gameClientList;
         private readonly IUserAntiCorruption _userAntiCorruption;
 
-        public GameServer(ILogger logger, TcpListener tcpListener, IProtocol protocol, IUserAntiCorruption userAntiCorruption)
+        public GameServer(IPLogger<GameServer> logger, TcpListener tcpListener, IProtocol protocol, IUserAntiCorruption userAntiCorruption)
         {
             _logger = logger;
             _listener = tcpListener;
@@ -39,10 +38,22 @@ namespace GameService.Controller
         public async Task<GameClient> AcceptClient()
         {
             var tcpClient = await _listener.AcceptTcpClientAsync();
-            if (!_protocol.HandShake(tcpClient)) return null;
+
+            var eventId = EventId.New();
+            _logger.LogInformation(eventId, "Handshake starting.");
+            if (!_protocol.HandShake(tcpClient))
+            {
+                _logger.LogError(eventId, "Handshake failed.");
+                return null;
+            }
+            _logger.LogInformation(eventId, "Handshake successful.");
             
-            var gameClient = await VerifyClient(tcpClient);
-            if (gameClient == null) return null;
+            var gameClient = await VerifyClient(tcpClient, eventId);
+            if (gameClient == null)
+            {
+                _logger.LogError(eventId, "VerifyClient failed.");
+                return null;
+            }
             
             _gameClientList.Add(gameClient);
             return gameClient;
@@ -62,7 +73,7 @@ namespace GameService.Controller
             return _protocol.Read(tcpClient, out input);
         }
         
-        private async Task<GameClient> VerifyClient(TcpClient client)
+        private async Task<GameClient> VerifyClient(TcpClient client, int eventId)
         {
             if(!Read(client, out var input)) return null;
             
@@ -70,7 +81,7 @@ namespace GameService.Controller
             if (verifyUserRequestModel == null) return null;
 
             var (user, character) = await VerifyUser(verifyUserRequestModel);
-            return new GameClient(client, user, character);
+            return new GameClient(client, user, character, eventId);
         }
         private async Task<(User, Character)> VerifyUser(VerifyUserRequestModel request)
         {

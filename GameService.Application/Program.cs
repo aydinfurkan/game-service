@@ -3,7 +3,6 @@ using GameService.Domain;
 using GameService.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace GameService
 {
@@ -19,7 +18,6 @@ namespace GameService
             {
                 //var logger = LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<Worker>();
                 // services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
-                services.AddSingleton<ILogger, Logger<Worker>>();
                 services.AddDomainModule();
                 services.AddInfrastructureModule();
                 services.AddAntiCorruptionModule();

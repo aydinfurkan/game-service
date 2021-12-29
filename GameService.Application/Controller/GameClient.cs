@@ -1,6 +1,7 @@
 using System.Net.Sockets;
 using System.Threading;
 using GameService.Domain.Entity;
+using GameService.Infrastructure.Logger;
 
 namespace GameService.Controller
 {
@@ -10,13 +11,15 @@ namespace GameService.Controller
         public User User { get; }
         public Character Character { get; }
         public CancellationTokenSource CancellationTokenSource { get; }
+        public int CorrelationId { get; }
 
-        public GameClient(TcpClient tcpClient, User user, Character character)
+        public GameClient(TcpClient tcpClient, User user, Character character, int correlationId)
         {
             TcpClient = tcpClient;
             User = user;
             Character = character;
             CancellationTokenSource = new CancellationTokenSource();
+            CorrelationId = correlationId;
         }
         
         

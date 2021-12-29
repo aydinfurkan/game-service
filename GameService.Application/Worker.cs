@@ -2,17 +2,17 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using GameService.Controller;
+using GameService.Infrastructure.Logger;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace GameService
 {
     public class Worker : BackgroundService
     {
-        private readonly ILogger<Worker> _logger;
+        private readonly IPLogger<Worker> _logger;
         private readonly ServerController _serverController;
 
-        public Worker(ILogger<Worker> logger, ServerController serverController)
+        public Worker(IPLogger<Worker> logger, ServerController serverController)
         {
             _logger = logger;
             _serverController = serverController;
@@ -20,17 +20,19 @@ namespace GameService
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("GameService Executed.");
             try
             {
+                _logger.LogInformation(EventId.GameService, "GameService Executing.");
                 await Task.Run(() => _serverController.Init(cancellationToken), cancellationToken);
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
-                _logger.LogError("GameService exception : " + exception.Message);
+                _logger.LogError(EventId.GameService,"ServerController Init exception.", exception);
             }
-
-            _logger.LogInformation("GameService Exited.");
+            finally
+            {
+                _logger.LogInformation(EventId.GameService, "GameService Executed.");
+            }
         }
     }
 }

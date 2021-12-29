@@ -3,17 +3,14 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using Microsoft.Extensions.Logging;
+using GameService.Infrastructure.Logger;
 
 namespace GameService.Protocol
 {
     public class WebSocketProtocol : IProtocol  // https://datatracker.ietf.org/doc/html/rfc6455#section-5.1
     {
-        
-        private readonly ILogger _logger;
-
-        public WebSocketProtocol(ILogger logger)
+        private readonly IPLogger<WebSocketProtocol> _logger;
+        public WebSocketProtocol(IPLogger<WebSocketProtocol> logger)
         {
             _logger = logger;
         }
@@ -89,16 +86,13 @@ namespace GameService.Protocol
         public bool HandShake(TcpClient client)
         {
             while(client.Available < 3){}
-            
-            _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- HandShake process start with {client.Client.RemoteEndPoint}.");
-            
+
             var data = new byte[client.ReceiveBufferSize];
             var bytes = client.GetStream().Read(data, 0, data.Length);
             var input = Encoding.ASCII.GetString(data, 0, bytes);
 
             if (!Regex.IsMatch(input, "^GET"))
             {
-                _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- HandShake process failed with {client.Client.RemoteEndPoint}.");
                 return false;
             }
             
@@ -114,7 +108,6 @@ namespace GameService.Protocol
 
             client.GetStream().Write(response, 0, response.Length);      
             
-            _logger.LogInformation($"Thread : {Thread.CurrentThread.ManagedThreadId} --- HandShake process end successfully with {client.Client.RemoteEndPoint}.");
             return true;
         }
         
