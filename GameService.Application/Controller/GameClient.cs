@@ -13,13 +13,13 @@ namespace GameService.Controller
         public CancellationTokenSource CancellationTokenSource { get; }
         public int CorrelationId { get; }
 
-        public GameClient(TcpClient tcpClient, User user, Character character, int correlationId)
+        public GameClient(TcpClient tcpClient, User user, Character character)
         {
             TcpClient = tcpClient;
             User = user;
             Character = character;
             CancellationTokenSource = new CancellationTokenSource();
-            CorrelationId = correlationId;
+            CorrelationId = EventId.New();
         }
         
         

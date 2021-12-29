@@ -4,6 +4,7 @@ namespace GameService.Infrastructure.Logger
     {
         public const int GameService = 0;
         public const int ServerController = 1;
+        public const int GameServer = 2;
         public const int ThreadCount = 99;
 
         private static int _id = 1000;

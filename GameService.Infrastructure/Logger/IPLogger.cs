@@ -6,6 +6,7 @@ namespace GameService.Infrastructure.Logger
     public interface IPLogger<T> where T : class
     {
         void LogInformation(int eventId, string message);
-        void LogError(int eventId, string message, Exception exception = null);
+        void LogError(int eventId, string message, Exception exception);
+        void LogWarning(int eventId, string message, Exception exception = null);
     }
 }

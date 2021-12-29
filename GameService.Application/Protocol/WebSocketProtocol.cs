@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -85,7 +86,9 @@ namespace GameService.Protocol
         
         public bool HandShake(TcpClient client)
         {
-            while(client.Available < 3){}
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            while(stopwatch.ElapsedMilliseconds < 100 && client.Available < 3){}
 
             var data = new byte[client.ReceiveBufferSize];
             var bytes = client.GetStream().Read(data, 0, data.Length);

@@ -48,16 +48,13 @@ namespace GameService.Controller
             _gameServer.Stop();
             _logger.LogInformation(EventId.ServerController, "TcpServer stopped.");
         }
-
-
+        
         private void NewConnection(GameClient gameClient)
         {
             _gameCommand.SetCharacterActive(gameClient.Character);
 
-            var streamTask = new Task(() => StreamClient(gameClient, gameClient.Character.CharacterId),
-                gameClient.CancellationTokenSource.Token);
-            var subscribeTask = new Task(() => SubscribeClient(gameClient, gameClient.Character.CharacterId),
-                gameClient.CancellationTokenSource.Token);
+            var streamTask = new Task(() => StreamClient(gameClient, gameClient.Character.CharacterId), gameClient.CancellationTokenSource.Token);
+            var subscribeTask = new Task(() => SubscribeClient(gameClient, gameClient.Character.CharacterId), gameClient.CancellationTokenSource.Token);
             try
             {
                 streamTask.Start();

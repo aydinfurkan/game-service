@@ -17,9 +17,13 @@ namespace GameService.Infrastructure.Logger
             _logger.LogInformation(eventId, message);
         }
 
-        public void LogError(int eventId, string message, Exception exception = null)
+        public void LogError(int eventId, string message, Exception exception)
         {
             _logger.LogError(eventId, exception, message);
+        }
+        public void LogWarning(int eventId, string message, Exception exception = null)
+        {
+            _logger.LogWarning(eventId, exception, message);
         }
     }
 }
