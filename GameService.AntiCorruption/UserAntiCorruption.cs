@@ -17,7 +17,7 @@ namespace GameService.AntiCorruption
         //     _httpClient = httpClient; // TODO fix transient
         // }
         
-        public async Task<User> VerifyUser(string pToken)
+        public async Task<User> VerifyUserAsync(string pToken)
         {
             using var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", pToken);

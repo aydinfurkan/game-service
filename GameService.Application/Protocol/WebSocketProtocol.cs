@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using GameService.Infrastructure.Logger;
 
 namespace GameService.Protocol
@@ -16,7 +17,7 @@ namespace GameService.Protocol
             _logger = logger;
         }
         
-        public bool Write(TcpClient client, string str) // TODO make longer than 125
+        public async Task<bool> WriteAsync(TcpClient client, string str) // TODO make longer than 125
         {
             var stream = client.GetStream();
             var queue = new Queue<string>(SplitInGroups(str,125)); //Make it so the message is never longer than 125 (Split the message into parts & store them in a queue)
@@ -30,19 +31,19 @@ namespace GameService.Protocol
                 header = (header << 7) + bytes.Length; //Add the length of the part we are going to send
 
                 //Send the header & message to client
-                stream.Write(IntToByteArray((ushort)header));
-                stream.Write(bytes);
+                await stream.WriteAsync(IntToByteArray((ushort)header));
+                await stream.WriteAsync(bytes);
             }
 
             return true;
         }
         
-        public bool Read(TcpClient client, out string input)
+        public async Task<string> ReadAsync(TcpClient client)
         {
             var stream = client.GetStream();
             
             var bytes = new byte[client.ReceiveBufferSize];
-            stream.Read(bytes, 0, bytes.Length);
+            await stream.ReadAsync(bytes);
             
             var fin = GetBit(bytes, 1);
             var mask = GetBit(bytes, 9);
@@ -54,8 +55,7 @@ namespace GameService.Protocol
             switch (msgLen)
             {
                 case 0:
-                    input = string.Empty;
-                    return true;
+                    return string.Empty;
                 case 126:
                     // was ToUInt16(bytes, offset) but the result is incorrect TODO
                     msgLen = BitConverter.ToUInt16(new [] { bytes[3], bytes[2] });
@@ -79,19 +79,19 @@ namespace GameService.Protocol
             for (var i = 0; i < msgLen; ++i)
                 decoded[i] = (byte)(bytes[offset++] ^ masks[i % 4]);
 
-            input = Encoding.UTF8.GetString(decoded);
+            var input = Encoding.UTF8.GetString(decoded);
             
-            return true;
+            return input;
         }
         
-        public bool HandShake(TcpClient client)
+        public async Task<bool> HandShakeAsync(TcpClient client)
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             while(stopwatch.ElapsedMilliseconds < 100 && client.Available < 3){}
 
             var data = new byte[client.ReceiveBufferSize];
-            var bytes = client.GetStream().Read(data, 0, data.Length);
+            var bytes = await client.GetStream().ReadAsync(data);
             var input = Encoding.ASCII.GetString(data, 0, bytes);
 
             if (!Regex.IsMatch(input, "^GET"))
@@ -109,7 +109,7 @@ namespace GameService.Protocol
                 "Upgrade: websocket" + eol +
                 "Sec-WebSocket-Accept: " + swkSha1Base64 + eol + eol);
 
-            client.GetStream().Write(response, 0, response.Length);      
+            await client.GetStream().WriteAsync(response);      
             
             return true;
         }

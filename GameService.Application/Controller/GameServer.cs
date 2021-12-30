@@ -35,12 +35,29 @@ namespace GameService.Controller
         {
             _listener.Stop();
         }
-        public async Task<GameClient> AcceptClient()
+        public async Task<TcpClient> AcceptClientAsync()
         {
-            var tcpClient = await _listener.AcceptTcpClientAsync();
+            return await _listener.AcceptTcpClientAsync();
+        }
+        public void CloseClient(GameClient gameClient)
+        {
+            gameClient.TcpClient.Close();
+            _gameClientList.Remove(gameClient);
+        }
+        public async Task<bool> WriteAsync(TcpClient tcpClient, object obj)
+        {
+            var str = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+            return await _protocol.WriteAsync(tcpClient, str);
+        }
+        public async Task<string> ReadAsync(TcpClient tcpClient)
+        {
+            return await _protocol.ReadAsync(tcpClient);
+        }
 
+        public async Task<GameClient> OpenNewConnectionAsync(TcpClient tcpClient)
+        {
             _logger.LogInformation(EventId.GameServer,"Handshake starting.");
-            if (!_protocol.HandShake(tcpClient))
+            if (!await _protocol.HandShakeAsync(tcpClient))
             {
                 _logger.LogWarning(EventId.GameServer,"Handshake failed.");
                 return null;
@@ -50,31 +67,18 @@ namespace GameService.Controller
             var gameClient = await VerifyClient(tcpClient);
             if (gameClient == null)
             {
-                _logger.LogWarning(EventId.GameServer, "VerifyClient failed.");
+                _logger.LogWarning(EventId.GameServer, "Verify client failed.");
                 return null;
             }
             
             _gameClientList.Add(gameClient);
             return gameClient;
         }
-        public void CloseClient(GameClient gameClient)
-        {
-            gameClient.TcpClient.Close();
-            _gameClientList.Remove(gameClient);
-        }
-        public bool Write(TcpClient tcpClient, object obj)
-        {
-            var str = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
-            return _protocol.Write(tcpClient, str);
-        }
-        public bool Read(TcpClient tcpClient, out string input)
-        {
-            return _protocol.Read(tcpClient, out input);
-        }
         
         private async Task<GameClient> VerifyClient(TcpClient client)
         {
-            if(!Read(client, out var input)) return null;
+            var input = await ReadAsync(client);
+            if(input == null) return null;
             
             var verifyUserRequestModel = Newtonsoft.Json.JsonConvert.DeserializeObject<VerifyUserRequestModel>(input);
             if (verifyUserRequestModel == null) return null;
@@ -84,7 +88,7 @@ namespace GameService.Controller
         }
         private async Task<(User, Character)> VerifyUser(VerifyUserRequestModel request)
         {
-            var user = await _userAntiCorruption.VerifyUser(request.Token);
+            var user = await _userAntiCorruption.VerifyUserAsync(request.Token);
             CancelFormerConnection(user);
             var character = user.CharacterList.FirstOrDefault(x =>
                 x.CharacterId == request.CharacterId &&

@@ -1,11 +1,12 @@
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace GameService.Protocol
 {
     public interface IProtocol
     {
-        public bool Write(TcpClient client, string str);
-        public bool Read(TcpClient client, out string input);
-        public bool HandShake(TcpClient client);
+        public Task<bool> WriteAsync(TcpClient client, string str);
+        public Task<string> ReadAsync(TcpClient client);
+        public Task<bool> HandShakeAsync(TcpClient client);
     }
 }

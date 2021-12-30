@@ -1,4 +1,5 @@
 using System;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using GameService.Commands;
@@ -34,10 +35,10 @@ namespace GameService.Controller
                 try
                 {
                     _logger.LogInformation(EventId.ServerController, "TcpServer waiting for accept a client.");
-                    var gameClientTask = Task.Run(async () => await _gameServer.AcceptClient(), cancellationToken);
-                    var gameClient = gameClientTask.Result;
-                    if (gameClient == null) continue;
-                    Task.Run(() => NewConnection(gameClient), cancellationToken);
+                    var tcpClient = Task.Run(_gameServer.AcceptClientAsync, cancellationToken).Result;
+                    if (tcpClient == null) continue;
+                    
+                    Task.Run(() => NewConnectionAsync(tcpClient), cancellationToken);
                 }
                 catch(Exception exception)
                 {
@@ -49,62 +50,73 @@ namespace GameService.Controller
             _logger.LogInformation(EventId.ServerController, "TcpServer stopped.");
         }
         
-        private void NewConnection(GameClient gameClient)
+        private async Task NewConnectionAsync(TcpClient tcpClient)
         {
+            var gameClient = await _gameServer.OpenNewConnectionAsync(tcpClient);
+            
             _gameCommand.SetCharacterActive(gameClient.Character);
-
-            var streamTask = new Task(() => StreamClient(gameClient, gameClient.Character.CharacterId), gameClient.CancellationTokenSource.Token);
-            var subscribeTask = new Task(() => SubscribeClient(gameClient, gameClient.Character.CharacterId), gameClient.CancellationTokenSource.Token);
+            var streamTask = Task.Run(() => StreamClient(gameClient), gameClient.CancellationTokenSource.Token);
+            var subscribeTask = Task.Run(() => SubscribeClient(gameClient), gameClient.CancellationTokenSource.Token);
             try
             {
-                streamTask.Start();
-                subscribeTask.Start();
                 _logger.LogInformation(gameClient.CorrelationId, "Stream and Subscribe tasks are started.");
                 Task.WaitAny(new[] {streamTask, subscribeTask}, gameClient.CancellationTokenSource.Token);
             }
-            catch(Exception e)
+            catch (OperationCanceledException e)
             {
-                _logger.LogError(gameClient.CorrelationId,"Client disconnected.", e);
+                _logger.LogWarning(gameClient.CorrelationId, "Multi client detection. User Id : " + gameClient.User);
             }
             finally
             {
                 _gameCommand.SetCharacterDeactivated(gameClient.Character); 
                 _gameServer.CloseClient(gameClient);
-                streamTask.Dispose();
-                subscribeTask.Dispose();
-                _logger.LogInformation(gameClient.CorrelationId, "Stream and Subscribe tasks are disposed.");
             }
 
         }
 
-        private void StreamClient(GameClient gameClient, Guid id)
+        private async Task StreamClient(GameClient gameClient)
         {
             _logger.LogInformation(gameClient.CorrelationId,"Stream process start.");
             while (true)
             {
-                var activeCharacters = _gameQuery.GetAllActiveCharacters();
-                var ok = _gameServer.Write(gameClient.TcpClient, activeCharacters);
-                Thread.Sleep(50);
-                if (!ok) break;
+                try
+                {
+                    var activeCharacters = _gameQuery.GetAllActiveCharacters();
+                    var ok = await _gameServer.WriteAsync(gameClient.TcpClient, activeCharacters);
+                    Thread.Sleep(50);
+                    if (!ok) break;
+                }
+                catch
+                {
+                    break;
+                }
             }
             _logger.LogInformation(gameClient.CorrelationId,"Stream process end.");
         }
         
-        private void SubscribeClient(GameClient gameClient, Guid id)
+        private async Task SubscribeClient(GameClient gameClient)
         {
             _logger.LogInformation(gameClient.CorrelationId,"Subscribe process start.");
             while (true)
             {
-                var ok = _gameServer.Read(gameClient.TcpClient, out var input);
-            
-                var requestModel = Newtonsoft.Json.JsonConvert.DeserializeObject<RequestModel.RequestModel>(input);
-                if (requestModel == null) continue;
-            
-                _gameCommand.ChangeCharacterPosition(id, requestModel.Position.ToDomainModel());
-                _gameCommand.ChangeCharacterQuaternion(id, requestModel.Quaternion.ToDomainModel());
-                _gameCommand.ChangeMoveState(id, requestModel.MoveState);
-                _gameCommand.ChangeJumpState(id, requestModel.JumpState);
-                if (!ok) break;
+                try
+                {
+                    var input = await _gameServer.ReadAsync(gameClient.TcpClient);
+                    if (input == null) break;
+
+                    var requestModel = Newtonsoft.Json.JsonConvert.DeserializeObject<RequestModel.RequestModel>(input);
+                    if (requestModel == null) continue;
+
+                    var characterId = gameClient.Character.CharacterId;
+                    _gameCommand.ChangeCharacterPosition(characterId, requestModel.Position.ToDomainModel());
+                    _gameCommand.ChangeCharacterQuaternion(characterId, requestModel.Quaternion.ToDomainModel());
+                    _gameCommand.ChangeMoveState(characterId, requestModel.MoveState);
+                    _gameCommand.ChangeJumpState(characterId, requestModel.JumpState);
+                }
+                catch
+                {
+                    break;
+                }
             }
             _logger.LogInformation(gameClient.CorrelationId,"Subscribe process end.");
         }
