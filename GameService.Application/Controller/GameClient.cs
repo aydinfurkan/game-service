@@ -22,8 +22,7 @@ namespace GameService.Controller
             Character = character;
             CancellationTokenSource = new CancellationTokenSource();
             CorrelationId = EventId.New();
+            tcpClient.NoDelay = true;
         }
-        
-        
     }
 }

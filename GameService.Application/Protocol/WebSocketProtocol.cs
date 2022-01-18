@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -20,21 +21,44 @@ namespace GameService.Protocol
         public async Task<bool> WriteAsync(TcpClient client, string str) // TODO make longer than 125
         {
             var stream = client.GetStream();
-            var queue = new Queue<string>(SplitInGroups(str,125)); //Make it so the message is never longer than 125 (Split the message into parts & store them in a queue)
-            var len = queue.Count;
+            var totalBytes = Encoding.UTF8.GetBytes(str);
 
-            while (queue.Count > 0)
+            if (totalBytes.Length <= 125)
             {
-                var header = GetHeader(queue.Count <= 1, queue.Count != len); //Get the header for a part of the queue
+                var queue = new Queue<List<byte>>(SplitToSubLists(totalBytes,125)); //Make it so the message is never longer than 125 (Split the message into parts & store them in a queue)
+                var len = queue.Count;
 
-                var bytes = Encoding.UTF8.GetBytes(queue.Dequeue()); //Get part of the message out of the queue
-                header = (header << 7) + bytes.Length; //Add the length of the part we are going to send
+                while (queue.Count > 0)
+                {
+                    var header = GetHeader(queue.Count <= 1, queue.Count != len); //Get the header for a part of the queue
 
-                //Send the header & message to client
-                await stream.WriteAsync(IntToByteArray((ushort)header));
-                await stream.WriteAsync(bytes);
+                    var bytes = queue.Dequeue(); //Get part of the message out of the queue
+                    header = (header << 7) + bytes.Count; //Add the length of the part we are going to send
+
+                    //Send the header & message to client
+                    await stream.WriteAsync(IntToByteArray((ushort)header));
+                    await stream.WriteAsync(bytes.ToArray());
+                }
             }
+            else
+            {
+                var queue = new Queue<List<byte>>(SplitToSubLists(totalBytes,65535)); //Make it so the message is never longer than 125 (Split the message into parts & store them in a queue)
+                var len = queue.Count;
 
+                while (queue.Count > 0)
+                {
+                    var header = GetHeader(queue.Count <= 1, queue.Count != len); //Get the header for a part of the queue
+
+                    var bytes = queue.Dequeue(); //Get part of the message out of the queue
+                    header = (header << 7) + 126;
+                    
+                    //Send the header & message to client
+                    await stream.WriteAsync(IntToByteArray((ushort)header));
+                    await stream.WriteAsync(IntToByteArray((ushort)bytes.Count));
+                    await stream.WriteAsync(bytes.ToArray());
+                }
+            }
+            
             return true;
         }
         
@@ -149,14 +173,24 @@ namespace GameService.Protocol
             yield return original.Substring(p);
         }
         
-        public static bool GetBit(byte[] bs, int bitNumber)
+        private List<List<byte>> SplitToSubLists(IEnumerable<byte> source, int n)
+        {
+            return source
+                .Select((x, i) => new { Index = i, Value = x })
+                .GroupBy(x => x.Index / n)
+                .Select(x => x.Select(v => v.Value).ToList())
+                .ToList();
+        } 
+
+        private static bool GetBit(byte[] bs, int bitNumber)
         {
             var b = bs[bitNumber / 8];
             var bN = bitNumber % 8;
             var s = 8 - bN;
             return (b & (1 << s)) != 0;
         }
-        public static int GetInt(byte b, int startBit, int endBit)
+
+        private static int GetInt(byte b, int startBit, int endBit)
         {
             var len = endBit - startBit + 1;
             var bn = 0;
