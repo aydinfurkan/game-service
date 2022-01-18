@@ -8,7 +8,7 @@ namespace GameService.Domain.Components
 {
     public class ActiveCharacters
     {
-        private static object _lockObj = new ();
+        private readonly object _lockObj = new ();
         private readonly Dictionary<Guid, Character> _characterList;
 
         public ActiveCharacters()
@@ -20,7 +20,7 @@ namespace GameService.Domain.Components
         {
             lock (_lockObj)
             {
-                return _characterList.TryAdd(character.CharacterId, character);
+                return _characterList.TryAdd(character.Id, character);
             }
         }
 
@@ -28,7 +28,7 @@ namespace GameService.Domain.Components
         {
             lock (_lockObj)
             {
-                return _characterList.Remove(character.CharacterId);
+                return _characterList.Remove(character.Id);
             }
         }
 

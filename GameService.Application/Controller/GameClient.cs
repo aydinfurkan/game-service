@@ -8,14 +8,16 @@ namespace GameService.Controller
     public class GameClient
     {
         public TcpClient TcpClient { get; }
+        public string PToken { get; }
         public User User { get; }
         public Character Character { get; }
         public CancellationTokenSource CancellationTokenSource { get; }
         public int CorrelationId { get; }
 
-        public GameClient(TcpClient tcpClient, User user, Character character)
+        public GameClient(TcpClient tcpClient, string pToken, User user, Character character)
         {
             TcpClient = tcpClient;
+            PToken = pToken;
             User = user;
             Character = character;
             CancellationTokenSource = new CancellationTokenSource();

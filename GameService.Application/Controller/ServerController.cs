@@ -14,13 +14,16 @@ namespace GameService.Controller
         private readonly GameServer _gameServer;
         private readonly GameQuery _gameQuery;
         private readonly GameCommand _gameCommand;
+        private readonly UserCommand _userCommand;
 
-        public ServerController(IPLogger<ServerController> logger, GameServer gameServer, GameQuery gameQuery, GameCommand gameCommand)
+        public ServerController(IPLogger<ServerController> logger, GameServer gameServer, GameQuery gameQuery, 
+            GameCommand gameCommand, UserCommand userCommand)
         {
             _logger = logger;
             _gameServer = gameServer;
             _gameQuery = gameQuery;
             _gameCommand = gameCommand;
+            _userCommand = userCommand;
         }
 
         public void Init(CancellationToken cancellationToken)
@@ -40,9 +43,9 @@ namespace GameService.Controller
                     
                     Task.Run(() => NewConnectionAsync(tcpClient), cancellationToken);
                 }
-                catch(Exception exception)
+                catch(Exception e)
                 {
-                    _logger.LogError(EventId.ServerController, "TcpServer exception.", exception);
+                    _logger.LogError(EventId.ServerController, "TcpServer exception.", e);
                 }
             }
             
@@ -59,15 +62,15 @@ namespace GameService.Controller
             var subscribeTask = Task.Run(() => SubscribeClient(gameClient), gameClient.CancellationTokenSource.Token);
             try
             {
-                _logger.LogInformation(gameClient.CorrelationId, "Stream and Subscribe tasks are started.");
                 Task.WaitAny(new[] {streamTask, subscribeTask}, gameClient.CancellationTokenSource.Token);
             }
             catch (OperationCanceledException e)
             {
-                _logger.LogWarning(gameClient.CorrelationId, "Multi client detection. User Id : " + gameClient.User);
+                _logger.LogWarning(gameClient.CorrelationId, "Multi client detection. User Id : " + gameClient.User.Id);
             }
             finally
             {
+                await _userCommand.UpdateCharacter(gameClient.PToken, gameClient.Character);
                 _gameCommand.SetCharacterDeactivated(gameClient.Character); 
                 _gameServer.CloseClient(gameClient);
             }
@@ -86,8 +89,9 @@ namespace GameService.Controller
                     Thread.Sleep(50);
                     if (!ok) break;
                 }
-                catch
+                catch(Exception e)
                 {
+                    _logger.LogError(gameClient.CorrelationId, "Stream client exception.", e);
                     break;
                 }
             }
@@ -107,14 +111,15 @@ namespace GameService.Controller
                     var requestModel = Newtonsoft.Json.JsonConvert.DeserializeObject<RequestModel.RequestModel>(input);
                     if (requestModel == null) continue;
 
-                    var characterId = gameClient.Character.CharacterId;
+                    var characterId = gameClient.Character.Id;
                     _gameCommand.ChangeCharacterPosition(characterId, requestModel.Position.ToDomainModel());
                     _gameCommand.ChangeCharacterQuaternion(characterId, requestModel.Quaternion.ToDomainModel());
                     _gameCommand.ChangeMoveState(characterId, requestModel.MoveState);
                     _gameCommand.ChangeJumpState(characterId, requestModel.JumpState);
                 }
-                catch
+                catch(Exception e)
                 {
+                    _logger.LogError(gameClient.CorrelationId, "Subscribe client exception.", e);
                     break;
                 }
             }

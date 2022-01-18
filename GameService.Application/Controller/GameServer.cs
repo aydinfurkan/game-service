@@ -84,16 +84,16 @@ namespace GameService.Controller
             if (verifyUserRequestModel == null) return null;
 
             var (user, character) = await VerifyUser(verifyUserRequestModel);
-            return new GameClient(client, user, character);
+            return new GameClient(client, verifyUserRequestModel.Token, user, character);
         }
         private async Task<(User, Character)> VerifyUser(VerifyUserRequestModel request)
         {
             var user = await _userAntiCorruption.VerifyUserAsync(request.Token);
             CancelFormerConnection(user);
             var character = user.CharacterList.FirstOrDefault(x =>
-                x.CharacterId == request.CharacterId &&
-                x.CharacterName == request.CharacterName &&
-                x.CharacterClass == request.CharacterClass);
+                x.Id == request.CharacterId &&
+                x.Name == request.CharacterName &&
+                x.Class == request.CharacterClass);
             return (user, character);
         }
         private void CancelFormerConnection(User user)

@@ -13,6 +13,7 @@ namespace GameService
         public static void AddApplicationModule(this IServiceCollection services)
         {
             services.AddSingleton<GameCommand>();
+            services.AddSingleton<UserCommand>();
             services.AddSingleton<GameQuery>();
             services.AddSingleton(new TcpListener(IPAddress.Any, 5000));
             services.AddSingleton<IProtocol, WebSocketProtocol>();

@@ -5,21 +5,23 @@ namespace GameService.Domain.Entity
 {
     public class Character
     {
-        public Guid CharacterId;
-        public string CharacterName;
-        public string CharacterClass;
+        public Guid Id;
+        public string Name;
+        public string Class;
         public Position Position;
         public Quaternion Quaternion;
+        public decimal Health;
         public string MoveState;
         public int JumpState;
 
-        public Character(Guid characterId, string characterName, string characterClass, Position position, Quaternion quaternion)
+        public Character(Guid id, string characterName, string characterClass, Position position, Quaternion quaternion, decimal health)
         {
-            CharacterId = characterId;
-            CharacterName = characterName;
-            CharacterClass = characterClass;
+            Id = id;
+            Name = characterName;
+            Class = characterClass;
             Position = position;
             Quaternion = quaternion;
+            Health = health;
             MoveState = "";
             JumpState = 0;
         }
