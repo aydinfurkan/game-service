@@ -2,6 +2,7 @@ using System;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using RequestModels = GameService.Infrastructure.Protocol.RequestModels;
 using ResponseModels = GameService.Infrastructure.Protocol.ResponseModels;
 
@@ -29,7 +30,10 @@ namespace GameService.Infrastructure.Protocol
                 _ => 3131
             };
             var responseModel = new ResponseModels.ResponseModel<T>(type, obj);
-            var str = JsonConvert.SerializeObject(responseModel);
+            var str = JsonConvert.SerializeObject(responseModel, new JsonSerializerSettings 
+            { 
+                ContractResolver = new CamelCasePropertyNamesContractResolver() 
+            });
             return await base.WriteAsync(client, str);
         }
         
