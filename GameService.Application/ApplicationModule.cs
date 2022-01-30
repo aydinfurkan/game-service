@@ -1,8 +1,9 @@
 using System.Net;
 using System.Net.Sockets;
 using GameService.Commands;
-using GameService.Controller;
-using GameService.Protocol;
+using GameService.Controllers;
+using GameService.Handler;
+using GameService.Infrastructure.Protocol;
 using GameService.Queries;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,8 +17,10 @@ namespace GameService
             services.AddSingleton<UserCommand>();
             services.AddSingleton<GameQuery>();
             services.AddSingleton(new TcpListener(IPAddress.Any, 5000));
-            services.AddSingleton<IProtocol, WebSocketProtocol>();
+            services.AddSingleton<IProtocol, GameProtocol>();
             services.AddSingleton<GameServer>();
+            services.AddSingleton<InputHandler>();
+            services.AddSingleton<InputQueue>();
             services.AddSingleton<ServerController>();
         }
     }

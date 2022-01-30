@@ -1,5 +1,4 @@
-using System.Net.Http;
-using GameService.Domain.Abstracts.AntiCorruption;
+using GameService.AntiCorruption.User;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GameService.AntiCorruption

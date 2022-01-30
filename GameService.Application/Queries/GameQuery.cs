@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using GameService.Domain.Entity;
+using GameService.Domain.Entities;
 
 namespace GameService.Queries
 {
@@ -18,9 +18,9 @@ namespace GameService.Queries
             return true;
         }
         
-        public bool IsCharacterActive(Guid id)
+        public Character FindCharacterOrDefault(Guid id)
         {
-            return _game.FindCharacterOrDefault(id) != null;
+            return _game.FindCharacterOrDefault(id);
         }
         
         public List<Character> GetAllActiveCharacters()

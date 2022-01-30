@@ -1,4 +1,5 @@
 using GameService.AntiCorruption;
+using GameService.AntiCorruption.User;
 using GameService.Domain;
 using GameService.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;

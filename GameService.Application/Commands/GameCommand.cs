@@ -1,6 +1,6 @@
 using System;
-using GameService.Domain.Entity;
-using GameService.Domain.ValueObject;
+using GameService.Domain.Entities;
+using GameService.Domain.ValueObjects;
 
 namespace GameService.Commands
 {

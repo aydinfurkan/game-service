@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using GameService.Controller;
+using GameService.Controllers;
 using GameService.Infrastructure.Logger;
 using Microsoft.Extensions.Hosting;
 

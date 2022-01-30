@@ -1,5 +1,5 @@
 using GameService.Domain.Components;
-using GameService.Domain.Entity;
+using GameService.Domain.Entities;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GameService.Domain
@@ -8,6 +8,7 @@ namespace GameService.Domain
     {
         public static void AddDomainModule(this IServiceCollection services)
         {
+            services.AddSingleton<ActiveCharacters>();
             services.AddSingleton<Game>();
         }
     }

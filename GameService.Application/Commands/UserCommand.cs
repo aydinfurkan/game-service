@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
-using GameService.Domain.Abstracts.AntiCorruption;
-using GameService.Domain.Entity;
+using GameService.AntiCorruption.User;
+using GameService.Domain.Entities;
 
 namespace GameService.Commands
 {

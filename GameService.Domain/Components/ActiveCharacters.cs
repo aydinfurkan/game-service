@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GameService.Domain.Entity;
-using GameService.Domain.ValueObject;
+using GameService.Domain.Entities;
+using GameService.Domain.ValueObjects;
 
 namespace GameService.Domain.Components
 {
