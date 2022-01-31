@@ -10,7 +10,7 @@ namespace GameService.Infrastructure.Protocol
 {
     public class GameProtocol : WebSocketProtocol, IProtocol
     {
-        public async Task<bool> WriteAsync<T>(TcpClient client, T obj) where T : ResponseModels.ResponseModelBase
+        public bool Write<T>(TcpClient client, T obj) where T : ResponseModels.ResponseModelBase
         {
             var type = obj switch
             {
@@ -34,12 +34,12 @@ namespace GameService.Infrastructure.Protocol
             { 
                 ContractResolver = new CamelCasePropertyNamesContractResolver() 
             });
-            return await base.WriteAsync(client, str);
+            return base.Write(client, str);
         }
         
-        public new async Task<object> ReadAsync(TcpClient client)
+        public new object Read(TcpClient client)
         {
-            var str= await base.ReadAsync(client);
+            var str= base.Read(client);
             var definition = new { Type = 0 };
             var type = JsonConvert.DeserializeAnonymousType(str, definition);
             object requestModelData = type?.Type switch
@@ -51,15 +51,15 @@ namespace GameService.Infrastructure.Protocol
                 161 => JsonConvert.DeserializeObject<RequestModels.RequestModel<RequestModels.JumpStateModel>>(str)?.Data,
                 162 => JsonConvert.DeserializeObject<RequestModels.RequestModel<RequestModels.SkillStateModel>>(str)?.Data,
                 176 => JsonConvert.DeserializeObject<RequestModels.RequestModel<RequestModels.SelectCharacterModel>>(str)?.Data,
-                _ => throw new ArgumentOutOfRangeException()
+                _ => null
             };
             
             return requestModelData;
         }
         
-        public new async Task<bool> HandShakeAsync(TcpClient client)
+        public new void HandShake(TcpClient client)
         {
-            return await base.HandShakeAsync(client);
+            base.HandShake(client);
         }
     }
 }

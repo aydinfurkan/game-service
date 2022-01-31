@@ -11,7 +11,7 @@ namespace GameService.Infrastructure.Protocol
 {
     public abstract class WebSocketProtocol  // https://datatracker.ietf.org/doc/html/rfc6455#section-5.1
     {
-        public async Task<bool> WriteAsync(TcpClient client, string str) // TODO make longer than 125
+        protected bool Write(TcpClient client, string str) // TODO make longer than 125
         {
             var stream = client.GetStream();
             var totalBytes = Encoding.UTF8.GetBytes(str);
@@ -29,8 +29,8 @@ namespace GameService.Infrastructure.Protocol
                     header = (header << 7) + bytes.Count; //Add the length of the part we are going to send
 
                     //Send the header & message to client
-                    await stream.WriteAsync(IntToByteArray((ushort)header));
-                    await stream.WriteAsync(bytes.ToArray());
+                    stream.Write(IntToByteArray((ushort)header));
+                    stream.Write(bytes.ToArray());
                 }
             }
             else
@@ -46,21 +46,21 @@ namespace GameService.Infrastructure.Protocol
                     header = (header << 7) + 126;
                     
                     //Send the header & message to client
-                    await stream.WriteAsync(IntToByteArray((ushort)header));
-                    await stream.WriteAsync(IntToByteArray((ushort)bytes.Count));
-                    await stream.WriteAsync(bytes.ToArray());
+                    stream.Write(IntToByteArray((ushort)header));
+                    stream.Write(IntToByteArray((ushort)bytes.Count));
+                    stream.Write(bytes.ToArray());
                 }
             }
             
             return true;
         }
-        
-        public async Task<string> ReadAsync(TcpClient client)
+
+        protected string Read(TcpClient client)
         {
             var stream = client.GetStream();
             
             var bytes = new byte[client.ReceiveBufferSize];
-            await stream.ReadAsync(bytes);
+            stream.Read(bytes);
             
             var fin = GetBit(bytes, 1);
             var mask = GetBit(bytes, 9);
@@ -100,20 +100,20 @@ namespace GameService.Infrastructure.Protocol
             
             return input;
         }
-        
-        public async Task<bool> HandShakeAsync(TcpClient client)
+
+        protected void HandShake(TcpClient client)
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            while(stopwatch.ElapsedMilliseconds < 100 && client.Available < 3){}
+            while(stopwatch.ElapsedMilliseconds < 5000 && client.Available < 3){}
 
             var data = new byte[client.ReceiveBufferSize];
-            var bytes = await client.GetStream().ReadAsync(data);
+            var bytes = client.GetStream().Read(data);
             var input = Encoding.ASCII.GetString(data, 0, bytes);
 
             if (!Regex.IsMatch(input, "^GET"))
             {
-                return false;
+                throw new Exception("HandShake failed.");
             }
             
             const string eol = "\r\n"; // HTTP/1.1 defines the sequence CR LF as the end-of-line marker
@@ -126,9 +126,7 @@ namespace GameService.Infrastructure.Protocol
                 "Upgrade: websocket" + eol +
                 "Sec-WebSocket-Accept: " + swkSha1Base64 + eol + eol);
 
-            await client.GetStream().WriteAsync(response);      
-            
-            return true;
+            client.GetStream().Write(response);
         }
         
         private int GetHeader(bool finalFrame, bool contFrame)

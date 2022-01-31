@@ -13,7 +13,7 @@ namespace GameService.Controllers
         public string PToken { get; }
         public User User { get; }
         public Character Character { get; }
-        public ConcurrentQueue<ResponseModelBase> GameQueue { get; }
+        public BlockingCollection<ResponseModelBase> GameQueue { get; }
         public CancellationTokenSource CancellationTokenSource { get; }
         public int CorrelationId { get; }
 
@@ -24,7 +24,7 @@ namespace GameService.Controllers
             User = user;
             Character = character;
             CancellationTokenSource = new CancellationTokenSource();
-            GameQueue = new ConcurrentQueue<ResponseModelBase>();
+            GameQueue = new BlockingCollection<ResponseModelBase>();
             CorrelationId = EventId.New();
             tcpClient.NoDelay = true;
         }

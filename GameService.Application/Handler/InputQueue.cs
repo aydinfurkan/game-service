@@ -7,22 +7,22 @@ namespace GameService.Handler
     public class InputQueue
     {
         private readonly InputHandler _inputHandler;
-        private readonly ConcurrentQueue<ClientInput> _queue;
+        private readonly BlockingCollection<ClientInput> _queue;
 
         public InputQueue(InputHandler inputHandler)
         {
             _inputHandler = inputHandler;
-            _queue = new ConcurrentQueue<ClientInput>();
+            _queue = new BlockingCollection<ClientInput>();
         }
 
         public void Push(ClientInput clientInput)
         {
-            _queue.Enqueue(clientInput);
+            _queue.Add(clientInput);
         }
 
         public ClientInput Pop()
         {
-            _queue.TryDequeue(out var clientInput);
+            _queue.TryTake(out var clientInput);
             return clientInput;
         }
 

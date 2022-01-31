@@ -7,10 +7,8 @@ using GameService.Commands;
 using GameService.Domain.Entities;
 using GameService.Infrastructure.Logger;
 using GameService.Infrastructure.Protocol;
-using GameService.Infrastructure.Protocol.RequestModels;
 using GameService.Infrastructure.Protocol.ResponseModels;
 using GameService.Queries;
-using Character = GameService.Infrastructure.Protocol.CommonModels.Character;
 
 namespace GameService.Controllers
 {
@@ -52,20 +50,21 @@ namespace GameService.Controllers
         public void CloseClient(GameClient gameClient)
         {
             gameClient.TcpClient.Close();
+            gameClient.GameQueue.CompleteAdding();
             _gameClientList.Remove(gameClient);
         }
-        public async Task<bool> WriteAsync<T>(TcpClient tcpClient, T obj) where T : ResponseModelBase
+        public bool Write<T>(TcpClient tcpClient, T obj) where T : ResponseModelBase
         {
-            return await _protocol.WriteAsync(tcpClient, obj);
+            return _protocol.Write(tcpClient, obj);
         }
-        public async Task<object> ReadAsync(TcpClient tcpClient)
+        public object Read(TcpClient tcpClient)
         {
-            return await _protocol.ReadAsync(tcpClient);
+            return _protocol.Read(tcpClient);
         }
         
         public void PushGameQueues(ResponseModelBase response, Func<GameClient,bool> expression)
         {
-            _gameClientList.Where(expression).ToList().ForEach(x => x.GameQueue.Enqueue(response));
+            _gameClientList.Where(expression).ToList().ForEach(x => x.GameQueue.Add(response));
         }
         public void CancelFormerConnection(User user)
         {
@@ -74,17 +73,9 @@ namespace GameService.Controllers
             while (gameClient != null && gameClient.TcpClient.Connected) { }
         }
 
-        public async Task<bool> OpenNewConnectionAsync(TcpClient tcpClient)
+        public void OpenNewConnection(TcpClient tcpClient)
         {
-            _logger.LogInformation(EventId.GameServer,"Handshake starting.");
-            if (!await _protocol.HandShakeAsync(tcpClient))
-            {
-                _logger.LogWarning(EventId.GameServer,"Handshake failed.");
-                return false;
-            }
-            _logger.LogInformation(EventId.GameServer, "Handshake successful.");
-            
-            return true;
+            _protocol.HandShake(tcpClient);
         }
 
     }
