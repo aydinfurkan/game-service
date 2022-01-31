@@ -58,22 +58,25 @@ namespace GameService.Controllers
             _gameServer.OpenNewConnection(tcpClient);
             var gameClient = await VerifyClient(tcpClient);
             
-            var streamTask = Task.Run(() => StreamClient(gameClient), gameClient.CancellationTokenSource.Token).ContinueWith(t => 
+            var streamTask = Task.Run(() => StreamClient(gameClient)).ContinueWith(t => 
                     _logger.LogError(gameClient.CorrelationId, $"Stream process exception. ({gameClient.User.Email} - {gameClient.Character.Id})", t.Exception),
-                    TaskContinuationOptions.OnlyOnFaulted);
+                    TaskContinuationOptions.NotOnRanToCompletion);
             
-            var subscribeTask = Task.Run(() => SubscribeClient(gameClient), gameClient.CancellationTokenSource.Token).ContinueWith(t => 
+            var subscribeTask = Task.Run(() => SubscribeClient(gameClient)).ContinueWith(t => 
                     _logger.LogError(gameClient.CorrelationId, $"Subscribe process exception. ({gameClient.User.Email} - {gameClient.Character.Id})", t.Exception),
-                    TaskContinuationOptions.OnlyOnFaulted);
-            
-            
-            Task.WaitAny(new[] {streamTask, subscribeTask}, gameClient.CancellationTokenSource.Token);
-            
-            gameClient.CancellationTokenSource.Cancel();
-            await _userCommand.UpdateCharacter(gameClient.PToken, gameClient.Character);
-            _gameCommand.SetCharacterDeactivated(gameClient.Character);
-            _inputHandler.HandleDisconnect(gameClient);
-            _gameServer.CloseClient(gameClient);
+                    TaskContinuationOptions.NotOnRanToCompletion);
+            try
+            {
+                Task.WaitAny(new[] {streamTask, subscribeTask}, gameClient.CancellationTokenSource.Token);
+            }
+            finally
+            {
+                await _userCommand.UpdateCharacter(gameClient.PToken, gameClient.Character);
+                _gameCommand.SetCharacterDeactivated(gameClient.Character);
+                _inputHandler.HandleDisconnect(gameClient);
+                _gameServer.CloseClient(gameClient);
+            }
+
         }
 
         private void StreamClient(GameClient gameClient)

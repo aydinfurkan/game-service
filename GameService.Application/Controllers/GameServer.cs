@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -50,6 +51,7 @@ namespace GameService.Controllers
         public void CloseClient(GameClient gameClient)
         {
             gameClient.TcpClient.Close();
+            gameClient.CancellationTokenSource.Cancel();
             gameClient.GameQueue.CompleteAdding();
             _gameClientList.Remove(gameClient);
         }
@@ -70,7 +72,16 @@ namespace GameService.Controllers
         {
             var gameClient = _gameClientList.FirstOrDefault(x => x.User.Id == user.Id);
             gameClient?.CancellationTokenSource.Cancel();
-            while (gameClient != null && gameClient.TcpClient.Connected) { }
+            
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            while (gameClient != null && gameClient.TcpClient.Connected)
+            {
+                if (stopwatch.ElapsedMilliseconds > 5000)
+                {
+                    throw new Exception("Cancel former connection timeout.");
+                }
+            }
         }
 
         public void OpenNewConnection(TcpClient tcpClient)
