@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using GameService.AntiCorruption.User;
 using GameService.Commands;
 using GameService.Controllers;
-using GameService.Domain.ValueObjects;
 using GameService.Infrastructure.Protocol.CommonModels;
 using GameService.Queries;
 using RequestModels = GameService.Infrastructure.Protocol.RequestModels;
@@ -58,13 +57,15 @@ namespace GameService.Handler
         }
         public bool HandlePosition(RequestModels.PositionModel requestModel, GameClient gameClient)
         {
-            var responseModel = new ResponseModels.PositionModel(requestModel.Position);
+            gameClient.Character.Position = requestModel.Position;
+            var responseModel = new ResponseModels.PositionModel(gameClient.Character.Id, requestModel.Position);
             _gameServer.PushGameQueues(responseModel, x => x.Character.Id != gameClient.Character.Id);
             return true;
         }
         public bool HandleQuaternion(RequestModels.QuaternionModel requestModel, GameClient gameClient)
         {
-            var responseModel = new ResponseModels.QuaternionModel(requestModel.Quaternion);
+            gameClient.Character.Quaternion = requestModel.Quaternion;
+            var responseModel = new ResponseModels.QuaternionModel(gameClient.Character.Id, requestModel.Quaternion);
             _gameServer.PushGameQueues(responseModel, x => x.Character.Id != gameClient.Character.Id);
             return true;
         }
