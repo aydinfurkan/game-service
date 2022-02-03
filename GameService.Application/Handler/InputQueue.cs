@@ -22,14 +22,12 @@ namespace GameService.Handler
 
         public ClientInput Pop()
         {
-            _queue.TryTake(out var clientInput);
-            return clientInput;
+            return _queue.Take();
         }
 
         public void Handle()
         {
             var clientInput = Pop();
-            if (clientInput == null) return;
             
             var ok = clientInput.Input switch
             {
