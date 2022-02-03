@@ -50,10 +50,10 @@ namespace GameService.Controllers
         }
         public void CloseClient(GameClient gameClient)
         {
-            gameClient.TcpClient.Close();
-            gameClient.CancellationTokenSource.Cancel();
-            gameClient.GameQueue.CompleteAdding();
             _gameClientList.Remove(gameClient);
+            gameClient.GameQueue.CompleteAdding();
+            gameClient.CancellationTokenSource.Cancel();
+            gameClient.TcpClient.Close();
         }
         public bool Write<T>(TcpClient tcpClient, T obj) where T : ResponseModelBase
         {
