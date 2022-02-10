@@ -4,6 +4,6 @@ namespace GameService.Infrastructure.Protocol.RequestModels
 {
     public class SelectCharacterModel : RequestModelBase
     {
-        public Guid Character { get; set; }
+        public Guid CharacterId { get; set; }
     }
 }

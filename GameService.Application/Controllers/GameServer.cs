@@ -64,9 +64,9 @@ namespace GameService.Controllers
             return _protocol.Read(tcpClient);
         }
         
-        public void PushGameQueues(ResponseModelBase response, Func<GameClient,bool> expression)
+        public void PushGameQueues(ResponseModelBase response, Func<GameClient,bool> expression = null)
         {
-            _gameClientList.Where(expression).ToList().ForEach(x => x.GameQueue.Add(response));
+            _gameClientList.Where(expression ?? (_ => true)).ToList().ForEach(x => x.GameQueue.Add(response));
         }
         public void CancelFormerConnection(User user)
         {

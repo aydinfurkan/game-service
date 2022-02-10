@@ -35,6 +35,7 @@ namespace GameService.Handler
                 QuaternionModel o => _inputHandler.HandleQuaternion(o, clientInput.Client),
                 MoveStateModel o => _inputHandler.HandleMoveState(o, clientInput.Client),
                 JumpStateModel o => _inputHandler.HandleJumpState(o, clientInput.Client),
+                SelectCharacterModel o => _inputHandler.HandleSelectCharacter(o, clientInput.Client),
                 SkillStateModel o => _inputHandler.HandleSkillState(o, clientInput.Client),
                 _ => throw new ArgumentOutOfRangeException()
             };

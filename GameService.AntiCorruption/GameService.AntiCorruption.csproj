@@ -7,9 +7,11 @@
 
     <ItemGroup>
       <ProjectReference Include="..\GameService.Domain\GameService.Domain.csproj" />
+      <ProjectReference Include="..\GameService.Infrastructure\GameService.Infrastructure.csproj" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     </ItemGroup>
 

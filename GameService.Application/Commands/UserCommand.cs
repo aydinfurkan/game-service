@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using GameService.AntiCorruption.User;
+using GameService.AntiCorruption.UserService;
 using GameService.Domain.Entities;
 
 namespace GameService.Commands

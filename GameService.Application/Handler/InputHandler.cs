@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using GameService.AntiCorruption.User;
+using GameService.AntiCorruption.UserService;
 using GameService.Commands;
 using GameService.Controllers;
 using GameService.Infrastructure.Protocol.CommonModels;
@@ -33,8 +33,9 @@ namespace GameService.Handler
             var gameClient = new GameClient(tcpClient, requestModel.PToken, user, character);
             _gameServer.AddClient(gameClient);
 
+            var userPlayer = new Player(character);
             var userCharacter = new Character(character);
-            var userCharacterResponseModel = new ResponseModels.UserCharacter(userCharacter);
+            var userCharacterResponseModel = new ResponseModels.UserCharacter(userPlayer);
             _gameServer.PushGameQueues(userCharacterResponseModel, x => x.Character.Id == gameClient.Character.Id);
             
             var activeCharacters = _gameQuery.GetAllActiveCharacters().Select(x => new Character(x)).ToList(); 
@@ -71,20 +72,37 @@ namespace GameService.Handler
         }
         public bool HandleMoveState(RequestModels.MoveStateModel requestModel, GameClient gameClient)
         {
+            gameClient.Character.MoveState = requestModel.MoveState;
             var responseModel = new ResponseModels.MoveStateModel(gameClient.Character.Id, requestModel.MoveState);
             _gameServer.PushGameQueues(responseModel, x => x.Character.Id != gameClient.Character.Id);
             return true;
         }
         public bool HandleJumpState(RequestModels.JumpStateModel requestModel, GameClient gameClient)
         {
+            gameClient.Character.JumpState = requestModel.JumpState;
             var responseModel = new ResponseModels.JumpStateModel(gameClient.Character.Id, requestModel.JumpState);
             _gameServer.PushGameQueues(responseModel, x => x.Character.Id != gameClient.Character.Id);
             return true;
         }
+        public bool HandleSelectCharacter(RequestModels.SelectCharacterModel requestModel, GameClient gameClient)
+        {
+            gameClient.Character.Target = _gameQuery.GetAllActiveCharacters()
+                .FirstOrDefault(x => x.Id == requestModel.CharacterId);
+            return true;
+        }
         public bool HandleSkillState(RequestModels.SkillStateModel requestModel, GameClient gameClient)
         {
-            var responseModel = new ResponseModels.SkillStateModel(gameClient.Character.Id, requestModel.SkillState);
-            _gameServer.PushGameQueues(responseModel, x => x.Character.Id != gameClient.Character.Id);
+            var castSkill = gameClient.Character.CastSkill(requestModel.SkillState);
+            
+            var responseSkillStateModel = new ResponseModels.SkillStateModel(gameClient.Character.Id, requestModel.SkillState);
+            _gameServer.PushGameQueues(responseSkillStateModel, x => x.Character.Id != gameClient.Character.Id);
+
+            if (castSkill.HealthChange(out var result))
+            {
+                var responseCharacterHealth = new ResponseModels.CharacterHealth(result.CharacterId, result.Health);
+                _gameServer.PushGameQueues(responseCharacterHealth);
+            }
+            
             return true;
         }
     }

@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using GameService.Domain.Skills;
 using GameService.Domain.ValueObjects;
 
 namespace GameService.Domain.Entities
@@ -8,29 +10,43 @@ namespace GameService.Domain.Entities
         public Guid Id;
         public string Name;
         public string Class;
-        public decimal MaxHealth;
-        public decimal MaxMana;
         
         public Position Position;
         public Quaternion Quaternion;
+
+        public Attributes Attributes;
+        public Level Level;
+        public Stats Stats;
+        public double Health;
+        public double Mana;
+        
         public Character Target;
         public string MoveState;
         public int JumpState;
-        public decimal Health;
-        public decimal Mana;
-
-        public Character(Guid id, string characterName, string characterClass, Position position, Quaternion quaternion,
-            decimal maxHealth, decimal health, decimal maxMana, decimal mana)
+        public Character(Guid id, string name, string @class, Position position, Quaternion quaternion, Attributes attributes, int experience)
         {
             Id = id;
-            Name = characterName;
-            Class = characterClass;
+            Name = name;
+            Class = @class;
             Position = position;
             Quaternion = quaternion;
-            MaxHealth = maxHealth;
-            Health = health;
-            MaxMana = maxMana;
-            Mana = mana;
+            Attributes = attributes;
+            Level = new Level(experience);
+            Stats = new Stats(attributes, Level);
+            Health = Stats.MaxHealth;
+            Mana = Stats.MaxMana;
+        }
+        
+        public ICastSkill CastSkill(int skillCode)
+        {
+            var skill = Skill.All.FirstOrDefault(x => x.Code == skillCode);
+
+            ICastSkill castSkill = skillCode switch
+            {
+                0 => new CastBasicAttack(this, Target),
+                _ => null
+            };
+            return castSkill;
         }
     }
 }

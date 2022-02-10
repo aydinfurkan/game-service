@@ -6,11 +6,11 @@ namespace GameService.Infrastructure.Protocol.ResponseModels
 {
     public class UserCharacter : ResponseModelBase
     {
-        public Character Character;
+        public Player Player;
 
-        public UserCharacter(Character character)
+        public UserCharacter(Player player)
         {
-            Character = character;
+            Player = player;
         }
     }
     

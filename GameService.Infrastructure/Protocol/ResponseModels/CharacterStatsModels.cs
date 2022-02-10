@@ -5,9 +5,9 @@ namespace GameService.Infrastructure.Protocol.ResponseModels
     public class CharacterHealth : ResponseModelBase
     {
         public Guid CharacterId;
-        public decimal Health;
+        public double Health;
         
-        public CharacterHealth(Guid characterId, decimal health)
+        public CharacterHealth(Guid characterId, double health)
         {
             CharacterId = characterId;
             Health = health;
@@ -16,9 +16,9 @@ namespace GameService.Infrastructure.Protocol.ResponseModels
     public class CharacterMana : ResponseModelBase
     {
         public Guid CharacterId;
-        public decimal Mana;
+        public double Mana;
         
-        public CharacterMana(Guid characterId, decimal mana)
+        public CharacterMana(Guid characterId, double mana)
         {
             CharacterId = characterId;
             Mana = mana;
@@ -27,10 +27,10 @@ namespace GameService.Infrastructure.Protocol.ResponseModels
     public class CharacterStats : ResponseModelBase
     {
         public Guid CharacterId;
-        public decimal MaxHealth;
-        public decimal MaxMana;
+        public double MaxHealth;
+        public double MaxMana;
 
-        public CharacterStats(Guid characterId, decimal maxHealth)
+        public CharacterStats(Guid characterId, double maxHealth)
         {
             CharacterId = characterId;
             MaxHealth = maxHealth;

@@ -3,28 +3,28 @@ using GameService.Domain.ValueObjects;
 
 namespace GameService.Infrastructure.Protocol.CommonModels
 {
-    public class Character
+    public class Player
     {
         public Guid Id;
         public string Name;
         public string Class;
         public Position Position;
         public Quaternion Quaternion;
-        public double MaxHealth;
+        public Stats Stats;
+        public Attributes Attributes;
         public double Health;
-        public double MaxMana;
         public double Mana;
 
-        public Character(Domain.Entities.Character character)
+        public Player(Domain.Entities.Character character)
         {
             Id = character.Id;
             Name = character.Name;
             Class = character.Class;
             Position = character.Position;
             Quaternion = character.Quaternion;
-            MaxHealth = character.Stats.MaxHealth;
+            Stats = character.Stats;
+            Attributes = character.Attributes;
             Health = character.Health;
-            MaxMana = character.Stats.MaxMana;
             Mana = character.Mana;
         }
     }
