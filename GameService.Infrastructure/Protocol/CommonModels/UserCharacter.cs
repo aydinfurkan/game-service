@@ -3,7 +3,7 @@ using GameService.Domain.ValueObjects;
 
 namespace GameService.Infrastructure.Protocol.CommonModels
 {
-    public class Player
+    public class UserCharacter
     {
         public Guid Id;
         public string Name;
@@ -15,7 +15,7 @@ namespace GameService.Infrastructure.Protocol.CommonModels
         public double Health;
         public double Mana;
 
-        public Player(Domain.Entities.Character character)
+        public UserCharacter(Domain.Entities.Character character)
         {
             Id = character.Id;
             Name = character.Name;

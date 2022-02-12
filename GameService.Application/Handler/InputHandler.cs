@@ -33,9 +33,9 @@ namespace GameService.Handler
             var gameClient = new GameClient(tcpClient, requestModel.PToken, user, character);
             _gameServer.AddClient(gameClient);
 
-            var userPlayer = new Player(character);
+            var userPlayer = new UserCharacter(character);
             var userCharacter = new Character(character);
-            var userCharacterResponseModel = new ResponseModels.UserCharacter(userPlayer);
+            var userCharacterResponseModel = new ResponseModels.ClientCharacter(userPlayer);
             _gameServer.PushGameQueues(userCharacterResponseModel, x => x.Character.Id == gameClient.Character.Id);
             
             var activeCharacters = _gameQuery.GetAllActiveCharacters().Select(x => new Character(x)).ToList(); 

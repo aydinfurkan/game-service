@@ -14,7 +14,7 @@ namespace GameService.Infrastructure.Protocol
         {
             var type = obj switch
             {
-                ResponseModels.UserCharacter => 0,
+                ResponseModels.ClientCharacter => 0,
                 ResponseModels.ActiveCharacters => 1,
                 ResponseModels.AddCharacter => 2,
                 ResponseModels.DeleteCharacter => 3,

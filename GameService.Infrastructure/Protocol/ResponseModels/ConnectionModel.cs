@@ -4,13 +4,13 @@ using GameService.Infrastructure.Protocol.CommonModels;
 
 namespace GameService.Infrastructure.Protocol.ResponseModels
 {
-    public class UserCharacter : ResponseModelBase
+    public class ClientCharacter : ResponseModelBase
     {
-        public Player Player;
+        public UserCharacter UserCharacter;
 
-        public UserCharacter(Player player)
+        public ClientCharacter(UserCharacter userCharacter)
         {
-            Player = player;
+            UserCharacter = userCharacter;
         }
     }
     
