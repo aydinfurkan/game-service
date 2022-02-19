@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using GameService.Domain.Skills;
 using GameService.Domain.ValueObjects;
@@ -21,6 +22,7 @@ namespace GameService.Domain.Entities
         public double Mana;
         
         public Character Target;
+        public List<CharacterSkill> CharacterSkills;
         public string MoveState;
         public int JumpState;
         public Character(Guid id, string name, string @class, Position position, Quaternion quaternion, Attributes attributes, int experience)
@@ -35,18 +37,21 @@ namespace GameService.Domain.Entities
             Stats = new Stats(attributes, Level);
             Health = Stats.MaxHealth;
             Mana = Stats.MaxMana;
+            CharacterSkills = new List<CharacterSkill>
+            {
+                new CharacterSkill(Skill.BasicRangedAttack)
+            };
         }
         
-        public ICastSkill CastSkill(int skillCode)
+        public bool TryCastSkill(int skillCode, out ICastSkill castSkill)
         {
-            var skill = Skill.All.FirstOrDefault(x => x.Code == skillCode);
+            var characterSkill = CharacterSkills.FirstOrDefault(x => x.Skill.Code == skillCode);
 
-            ICastSkill castSkill = skillCode switch
-            {
-                0 => new CastBasicAttack(this, Target),
-                _ => null
-            };
-            return castSkill;
+            if (characterSkill != null) return characterSkill.TryCast(this, Target, out castSkill);
+            
+            castSkill = null;
+            return false;
+
         }
     }
 }

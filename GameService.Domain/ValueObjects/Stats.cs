@@ -28,7 +28,7 @@ namespace GameService.Domain.ValueObjects
             MagicResist = 10 + attributes.Defense * 10 + level.Value * 5;
             CriticalRate = 0.05;
             CriticalDamage = 1.5 + attributes.Dexterity * 0.005;
-            CdReduction = 0;
+            CdReduction = 0 + attributes.Wisdom / 100;
             MoveSpeed = 100;
             DropRate = 1;
         }

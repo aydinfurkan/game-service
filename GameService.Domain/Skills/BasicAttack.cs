@@ -1,37 +1,37 @@
-using System.ComponentModel.DataAnnotations;
+using GameService.Domain.Abstracts;
 using GameService.Domain.Entities;
 using GameService.Domain.Skills.Results;
+using GameService.Domain.ValueObjects;
 
 namespace GameService.Domain.Skills
 {
-    public class CastBasicAttack : ICastSkill
+    public class CastBasicAttack : SkillBase
     {
         private readonly Character _user;
         private readonly Character _target;
         
-        public CastBasicAttack(Character user, Character target)
+        public CastBasicAttack(Character user, Character target, Skill skill) : base(user, target, skill)
         {
             _user = user;
             _target = target;
-            target.Health -= 100;
         }
         
-        public bool HealthChange(out HealthResult result)
+        public override bool HealthChange(out HealthResult result)
         {
+            if (!CanBeCasted) return base.HealthChange(out result);
+
+            if (GlobalRandom.Rand().Next(100) < _target.Stats.CriticalRate * 100)
+            {
+                _target.Health -= (_user.Stats.PhysicalDamage * _target.Stats.Armor / 500)*2;
+            }
+            else
+            {
+                _target.Health -= _user.Stats.PhysicalDamage * _target.Stats.Armor / 500;
+            }
+            
             result = new HealthResult(_target.Id, _target.Health);
             return true;
-        }
 
-        public bool ManaChange(out ManaResult result)
-        {
-            result = null;
-            return false;
-        }
-
-        public bool StatsChange(out StatsResult result)
-        {
-            result = null;
-            return false;
         }
     }
 }
