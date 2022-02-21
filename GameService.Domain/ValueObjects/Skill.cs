@@ -5,7 +5,7 @@ namespace GameService.Domain.ValueObjects
 {
     public class Skill
     {
-        public static readonly Skill BasicRangedAttack = new Skill(0, 0, 10, 1);
+        public static readonly Skill BasicRangedAttack = new Skill(0, 0, 10, 1000);
 
         public readonly int Code;
         public readonly int ManaCost;

@@ -39,7 +39,7 @@ namespace GameService.Domain.Entities
             Mana = Stats.MaxMana;
             CharacterSkills = new List<CharacterSkill>
             {
-                new CharacterSkill(Skill.BasicRangedAttack)
+                new CharacterSkill(Skill.BasicRangedAttack, this)
             };
         }
         
@@ -47,7 +47,7 @@ namespace GameService.Domain.Entities
         {
             var characterSkill = CharacterSkills.FirstOrDefault(x => x.Skill.Code == skillCode);
 
-            if (characterSkill != null) return characterSkill.TryCast(this, Target, out castSkill);
+            if (characterSkill != null) return characterSkill.TryCast(Target, out castSkill);
             
             castSkill = null;
             return false;

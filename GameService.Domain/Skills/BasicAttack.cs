@@ -18,15 +18,13 @@ namespace GameService.Domain.Skills
         
         public override bool HealthChange(out HealthResult result)
         {
-            if (!CanBeCasted) return base.HealthChange(out result);
-
             if (GlobalRandom.Rand().Next(100) < _target.Stats.CriticalRate * 100)
             {
-                _target.Health -= (_user.Stats.PhysicalDamage * _target.Stats.Armor / 500)*2;
+                _target.Health -= _user.Stats.PhysicalDamage * (1 - _target.Stats.Armor / 300)*2;
             }
             else
             {
-                _target.Health -= _user.Stats.PhysicalDamage * _target.Stats.Armor / 500;
+                _target.Health -= _user.Stats.PhysicalDamage * (1 - _target.Stats.Armor / 300);
             }
             
             result = new HealthResult(_target.Id, _target.Health);
