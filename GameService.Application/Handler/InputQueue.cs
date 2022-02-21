@@ -37,7 +37,7 @@ namespace GameService.Handler
                 JumpStateModel o => _inputHandler.HandleJumpState(o, clientInput.Client),
                 SelectCharacterModel o => _inputHandler.HandleSelectCharacter(o, clientInput.Client),
                 SkillStateModel o => _inputHandler.HandleSkillState(o, clientInput.Client),
-                _ => throw new ArgumentOutOfRangeException()
+                _ => false
             };
         }
 
