@@ -2,6 +2,7 @@ using System;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using GameService.Commands;
 using GameService.Handler;
 using GameService.Infrastructure.Logger;
@@ -65,6 +66,10 @@ namespace GameService.Controllers
             var subscribeTask = Task.Run(() => SubscribeClient(gameClient)).ContinueWith(t => 
                     _logger.LogError(gameClient.CorrelationId, $"Subscribe process exception. ({gameClient.User.Email} - {gameClient.Character.Id})", t.Exception),
                     TaskContinuationOptions.NotOnRanToCompletion);
+            
+            var tickTimer = new System.Timers.Timer(500) {Enabled = true};
+            tickTimer.Elapsed += (_, e) => TickClient(gameClient, e);
+            
             try
             {
                 Task.WaitAny(new[] {streamTask, subscribeTask}, gameClient.CancellationTokenSource.Token);
@@ -75,6 +80,8 @@ namespace GameService.Controllers
                 _gameCommand.SetCharacterDeactivated(gameClient.Character);
                 _inputHandler.HandleDisconnect(gameClient);
                 _gameServer.CloseClient(gameClient);
+                tickTimer.Stop();
+                tickTimer.Dispose();
             }
 
         }
@@ -105,6 +112,10 @@ namespace GameService.Controllers
             }
 
             _logger.LogInformation(gameClient.CorrelationId,$"Subscribe process end. ({gameClient.User.Email} - {gameClient.Character.Id})");
+        }
+        private void TickClient(GameClient gameClient, ElapsedEventArgs eventArgs)
+        {
+            _inputHandler.HandleTick(gameClient, eventArgs.SignalTime);
         }
         
         private async Task<GameClient> VerifyClient(TcpClient client)

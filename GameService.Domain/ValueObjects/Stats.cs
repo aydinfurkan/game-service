@@ -18,7 +18,7 @@ namespace GameService.Domain.ValueObjects
 
         public Stats(Attributes attributes, Level level)
         {
-            MaxHealth = 100 + attributes.Vitality * 10 + level.Value * 20;
+            MaxHealth = 500 + attributes.Vitality * 10 + level.Value * 20;
             HealthRegen = 1 + level.Value * 0.5;
             MaxMana = 50 + (attributes.Wisdom + attributes.Intelligent) * 10 + level.Value * 10;
             ManaRegen = 0.5 + level.Value * 0.3;

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -30,10 +31,13 @@ namespace GameService.Infrastructure.Protocol
                 _ => 3131
             };
             var responseModel = new ResponseModels.ResponseModel<T>(type, obj);
-            var str = JsonConvert.SerializeObject(responseModel, new JsonSerializerSettings 
-            { 
-                ContractResolver = new CamelCasePropertyNamesContractResolver() 
-            });
+
+            var jsonSetting = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
+            jsonSetting.Converters.Add(new DecimalFormatConverter());
+            var str = JsonConvert.SerializeObject(responseModel, jsonSetting);
             return base.Write(client, str);
         }
         

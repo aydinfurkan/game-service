@@ -21,15 +21,15 @@ namespace GameService.Domain.Entities
             CanBeUsedAt = DateTime.UtcNow;
         }
         
-        public bool TryCast(Character target, out ICastSkill castSkill)
+        public bool TryCast(Character target, out IChange change)
         {
             if (!CanBeCasted(target))
             {
-                castSkill = null;
+                change = null;
                 return false;
             }
 
-            castSkill = Skill.Cast(User, target);
+            change = Skill.Cast(User, target);
             UsedAt = DateTime.UtcNow;
             CanBeUsedAt = DateTime.UtcNow.AddMilliseconds(CalculateCooldown());
             return true;
@@ -37,7 +37,11 @@ namespace GameService.Domain.Entities
 
         private bool CanBeCasted(Character target)
         {
-            return IsUserAlive() && IsTargetAlive(target) && IsManaEnough() && IsRangeEnough(target) && IsNotOnCooldown();
+            if (target == null) return false;
+            
+            return IsUserAlive() && IsTargetValid(target) && IsTargetAlive(target) &&
+                   IsManaEnough() && IsRangeEnough(target) && 
+                   IsNotOnCooldown();
         }
 
         private double CalculateCooldown()
@@ -52,6 +56,10 @@ namespace GameService.Domain.Entities
         private bool IsUserAlive()
         {
             return User.Health > 0;
+        }
+        private bool IsTargetValid(Character target)
+        {
+            return Skill.SelfCast || target.Id != User.Id;
         }
         private bool IsTargetAlive(Character target)
         {

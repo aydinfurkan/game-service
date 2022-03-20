@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Timers;
 using GameService.Domain.Skills;
 using GameService.Domain.ValueObjects;
 
@@ -25,6 +26,7 @@ namespace GameService.Domain.Entities
         public List<CharacterSkill> CharacterSkills;
         public string MoveState;
         public int JumpState;
+        public DateTime LastTick;
         public Character(Guid id, string name, string @class, Position position, Quaternion quaternion, Attributes attributes, int experience)
         {
             Id = id;
@@ -41,17 +43,28 @@ namespace GameService.Domain.Entities
             {
                 new CharacterSkill(Skill.BasicRangedAttack, this)
             };
+            LastTick = DateTime.Now;
         }
         
-        public bool TryCastSkill(int skillCode, out ICastSkill castSkill)
+        public bool Tick(DateTime signalTime, out IChange change)
+        {
+            var delta = (signalTime - LastTick).Milliseconds / 1000.0;
+            LastTick = signalTime;
+
+            change = new Passive(this, delta);
+            return true;
+        }
+        
+        public bool TryCastSkill(int skillCode, out IChange change)
         {
             var characterSkill = CharacterSkills.FirstOrDefault(x => x.Skill.Code == skillCode);
 
-            if (characterSkill != null) return characterSkill.TryCast(Target, out castSkill);
+            if (characterSkill != null) return characterSkill.TryCast(Target, out change);
             
-            castSkill = null;
+            change = null;
             return false;
 
         }
+
     }
 }

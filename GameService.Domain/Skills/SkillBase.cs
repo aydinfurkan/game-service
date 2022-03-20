@@ -4,7 +4,7 @@ using GameService.Domain.ValueObjects;
 
 namespace GameService.Domain.Skills
 {
-    public abstract class SkillBase : ICastSkill
+    public abstract class SkillBase : IChange
     {
         private readonly Character _user;
         private readonly Character _target;

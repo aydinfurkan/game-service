@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -102,6 +103,25 @@ namespace GameService.Handler
             {
                 var responseCharacterHealth = new ResponseModels.CharacterHealth(result.CharacterId, result.Health);
                 _gameServer.PushGameQueues(responseCharacterHealth);
+            }
+            
+            return true;
+        }
+        public bool HandleTick(GameClient gameClient, DateTime signalTime)
+        {
+            var ok = gameClient.Character.Tick(signalTime, out var change);
+            if (!ok) return false;
+            
+            if (change.HealthChange(out var hResult))
+            {
+                var responseCharacterHealth = new ResponseModels.CharacterHealth(hResult.CharacterId, hResult.Health);
+                _gameServer.PushGameQueues(responseCharacterHealth);
+            }
+            
+            if (change.ManaChange(out var mResult))
+            {
+                var responseCharacterMana = new ResponseModels.CharacterMana(mResult.CharacterId, mResult.Mana);
+                _gameServer.PushGameQueues(responseCharacterMana);
             }
             
             return true;

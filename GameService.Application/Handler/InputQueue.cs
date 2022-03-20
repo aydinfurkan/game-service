@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Concurrent;
+using GameService.Controllers;
+using GameService.Infrastructure.Logger;
 using GameService.Infrastructure.Protocol.RequestModels;
 
 namespace GameService.Handler
@@ -8,10 +10,12 @@ namespace GameService.Handler
     {
         private readonly InputHandler _inputHandler;
         private readonly BlockingCollection<ClientInput> _queue;
+        private readonly IPLogger<ServerController> _logger;
 
-        public InputQueue(InputHandler inputHandler)
+        public InputQueue(InputHandler inputHandler, IPLogger<ServerController> logger)
         {
             _inputHandler = inputHandler;
+            _logger = logger;
             _queue = new BlockingCollection<ClientInput>();
         }
 
@@ -28,17 +32,26 @@ namespace GameService.Handler
         public void Handle()
         {
             var clientInput = Pop();
-            
-            var ok = clientInput.Input switch
+
+            try
             {
-                PositionModel o => _inputHandler.HandlePosition(o, clientInput.Client),
-                QuaternionModel o => _inputHandler.HandleQuaternion(o, clientInput.Client),
-                MoveStateModel o => _inputHandler.HandleMoveState(o, clientInput.Client),
-                JumpStateModel o => _inputHandler.HandleJumpState(o, clientInput.Client),
-                SelectCharacterModel o => _inputHandler.HandleSelectCharacter(o, clientInput.Client),
-                SkillStateModel o => _inputHandler.HandleSkillState(o, clientInput.Client),
-                _ => false
-            };
+                var ok = clientInput.Input switch
+                {
+                    PositionModel o => _inputHandler.HandlePosition(o, clientInput.Client),
+                    QuaternionModel o => _inputHandler.HandleQuaternion(o, clientInput.Client),
+                    MoveStateModel o => _inputHandler.HandleMoveState(o, clientInput.Client),
+                    JumpStateModel o => _inputHandler.HandleJumpState(o, clientInput.Client),
+                    SelectCharacterModel o => _inputHandler.HandleSelectCharacter(o, clientInput.Client),
+                    SkillStateModel o => _inputHandler.HandleSkillState(o, clientInput.Client),
+                    _ => false
+                };
+            }
+            catch(Exception e)
+            {
+                _logger.LogError(EventId.Handle,$"Error on : {clientInput.Input}", e);
+            }
+            
+            
         }
 
         
