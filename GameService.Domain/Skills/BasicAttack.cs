@@ -20,7 +20,7 @@ namespace GameService.Domain.Skills
         {
             if (GlobalRandom.Rand().Next(100) < _target.Stats.CriticalRate * 100)
             {
-                _target.Health -= _user.Stats.PhysicalDamage * (1 - _target.Stats.Armor / 300)*2;
+                _target.Health -= _user.Stats.PhysicalDamage * (1 - _target.Stats.Armor / 300) * _target.Stats.CriticalDamage;
             }
             else
             {

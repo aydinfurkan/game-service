@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Timers;
 using GameService.Domain.Skills;
 using GameService.Domain.ValueObjects;
 
@@ -21,6 +20,7 @@ namespace GameService.Domain.Entities
         public Stats Stats;
         public double Health;
         public double Mana;
+        public bool IsDead;
         
         public Character Target;
         public List<CharacterSkill> CharacterSkills;
@@ -39,10 +39,7 @@ namespace GameService.Domain.Entities
             Stats = new Stats(attributes, Level);
             Health = Stats.MaxHealth;
             Mana = Stats.MaxMana;
-            CharacterSkills = new List<CharacterSkill>
-            {
-                new CharacterSkill(Skill.BasicRangedAttack, this)
-            };
+            CharacterSkills = GetCharacterSkills();
             LastTick = DateTime.Now;
         }
         
@@ -51,6 +48,13 @@ namespace GameService.Domain.Entities
             var delta = (signalTime - LastTick).Milliseconds / 1000.0;
             LastTick = signalTime;
 
+            if(Health < 10e-2)
+            {
+                IsDead = true;
+                change = null;
+                return false;
+            }
+            
             change = new Passive(this, delta);
             return true;
         }
@@ -63,7 +67,38 @@ namespace GameService.Domain.Entities
             
             change = null;
             return false;
+        }
 
+        private List<CharacterSkill> GetCharacterSkills()
+        {
+            switch (Class)
+            {
+                case "warrior":
+                    return new List<CharacterSkill>
+                    {
+                        new (Skill.WarriorBasicAttack, this)
+                    };
+                case "archer":
+                    return new List<CharacterSkill>
+                    {
+                        new (Skill.ArcherBasicAttack, this)
+                    };
+                case "mage":
+                    return new List<CharacterSkill>
+                    {
+                        new (Skill.MageBasicAttack, this)
+                    };
+                case "healer":
+                    return new List<CharacterSkill>
+                    {
+                        new (Skill.HealerBasicAttack, this)
+                    };
+                default:
+                    return new List<CharacterSkill>
+                    {
+                        new(Skill.WarriorBasicAttack, this)
+                    };
+            }
         }
 
     }

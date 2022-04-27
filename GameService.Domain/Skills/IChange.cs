@@ -1,4 +1,3 @@
-using GameService.Domain.Entities;
 using GameService.Domain.Skills.Results;
 
 namespace GameService.Domain.Skills

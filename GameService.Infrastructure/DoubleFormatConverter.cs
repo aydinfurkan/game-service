@@ -3,17 +3,20 @@ using Newtonsoft.Json;
 
 namespace GameService.Infrastructure
 {
-    public class DecimalFormatConverter : JsonConverter
+    public class DoubleFormatConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
-            return (objectType == typeof(decimal));
+            return objectType == typeof(double);
         }
 
         public override void WriteJson(JsonWriter writer, object value, 
             JsonSerializer serializer)
         {
-            writer.WriteValue($"{value:N2}");
+            if (value is double d)
+            {
+                writer.WriteValue(Math.Round(d, 2));
+            }
         }
 
         public override bool CanRead => false;

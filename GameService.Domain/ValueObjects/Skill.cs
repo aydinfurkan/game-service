@@ -5,7 +5,10 @@ namespace GameService.Domain.ValueObjects
 {
     public class Skill
     {
-        public static readonly Skill BasicRangedAttack = new Skill(0, 0, 10, 1000, false);
+        public static readonly Skill WarriorBasicAttack = new Skill(1, 0, 5, 1000, false);
+        public static readonly Skill ArcherBasicAttack = new Skill(2, 0, 35, 1000, false);
+        public static readonly Skill MageBasicAttack = new Skill(3, 0, 30, 1000, false);
+        public static readonly Skill HealerBasicAttack = new Skill(4, 0, 30, 1000, false);
 
         public readonly int Code;
         public readonly int ManaCost;
@@ -25,7 +28,10 @@ namespace GameService.Domain.ValueObjects
         {
             return Code switch
             {
-                0 => new CastBasicAttack(user, target, this),
+                1 => new CastBasicAttack(user, target, this),
+                2 => new CastBasicAttack(user, target, this),
+                3 => new CastBasicAttack(user, target, this),
+                4 => new CastBasicAttack(user, target, this),
                 _ => null
             };
         }

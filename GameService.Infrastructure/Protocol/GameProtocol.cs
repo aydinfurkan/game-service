@@ -36,7 +36,7 @@ namespace GameService.Infrastructure.Protocol
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
-            jsonSetting.Converters.Add(new DecimalFormatConverter());
+            jsonSetting.Converters.Add(new DoubleFormatConverter());
             var str = JsonConvert.SerializeObject(responseModel, jsonSetting);
             return base.Write(client, str);
         }

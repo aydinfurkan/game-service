@@ -40,7 +40,7 @@ namespace GameService.Domain.Entities
             if (target == null) return false;
             
             return IsUserAlive() && IsTargetValid(target) && IsTargetAlive(target) &&
-                   IsManaEnough() && IsRangeEnough(target) && 
+                   IsManaEnough() && IsInRange(target) && 
                    IsNotOnCooldown();
         }
 
@@ -55,7 +55,7 @@ namespace GameService.Domain.Entities
         }
         private bool IsUserAlive()
         {
-            return User.Health > 0;
+            return !User.IsDead;
         }
         private bool IsTargetValid(Character target)
         {
@@ -63,13 +63,13 @@ namespace GameService.Domain.Entities
         }
         private bool IsTargetAlive(Character target)
         {
-            return target.Health > 0;
+            return !target.IsDead;
         }
         private bool IsManaEnough()
         {
             return User.Mana >= Skill.ManaCost;
         }
-        private bool IsRangeEnough(Character target)
+        private bool IsInRange(Character target)
         {
             return User.Position.DistanceTo(target.Position) <= Skill.Range;
         }
