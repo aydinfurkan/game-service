@@ -27,11 +27,13 @@ namespace GameService.Infrastructure.Protocol.ResponseModels
     public class SkillStateModel : ResponseModelBase
     {
         public Guid CharacterId;
+        public Guid TargetCharacterId;
         public int SkillState;
 
-        public SkillStateModel(Guid characterId, int skillState)
+        public SkillStateModel(Guid characterId, Guid targetCharacterId, int skillState)
         {
             CharacterId = characterId;
+            TargetCharacterId = targetCharacterId;
             SkillState = skillState;
         }
     }

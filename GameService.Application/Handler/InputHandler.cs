@@ -96,7 +96,7 @@ namespace GameService.Handler
             var ok = gameClient.Character.TryCastSkill(requestModel.SkillState, out var castSkill);
             if (!ok) return false;
             
-            var responseSkillStateModel = new ResponseModels.SkillStateModel(gameClient.Character.Id, requestModel.SkillState);
+            var responseSkillStateModel = new ResponseModels.SkillStateModel(gameClient.Character.Id, gameClient.Character.Target.Id,requestModel.SkillState);
             _gameServer.PushGameQueues(responseSkillStateModel, x => x.Character.Id != gameClient.Character.Id);
 
             if (castSkill.HealthChange(out var result))
