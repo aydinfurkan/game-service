@@ -1,9 +1,8 @@
 using System;
 
-namespace GameService.Infrastructure.Protocol.RequestModels
+namespace GameService.Infrastructure.Protocol.RequestModels;
+
+public class SelectCharacterModel : RequestModelBase
 {
-    public class SelectCharacterModel : RequestModelBase
-    {
-        public Guid CharacterId { get; set; }
-    }
+    public Guid CharacterId { get; set; }
 }

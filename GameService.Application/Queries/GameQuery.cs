@@ -2,30 +2,29 @@ using System;
 using System.Collections.Generic;
 using GameService.Domain.Entities;
 
-namespace GameService.Queries
+namespace GameService.Application.Queries;
+
+public class GameQuery
 {
-    public class GameQuery
+    private Game _game;
+
+    public GameQuery(Game game)
     {
-        private Game _game;
+        _game = game;
+    }
 
-        public GameQuery(Game game)
-        {
-            _game = game;
-        }
-
-        public bool IsIdExist(Guid id)
-        {
-            return true;
-        }
+    public bool IsIdExist(Guid id)
+    {
+        return true;
+    }
         
-        public Character FindCharacterOrDefault(Guid id)
-        {
-            return _game.FindCharacterOrDefault(id);
-        }
+    public Character FindCharacterOrDefault(Guid id)
+    {
+        return _game.FindCharacterOrDefault(id);
+    }
         
-        public List<Character> GetAllActiveCharacters()
-        {
-            return _game.GetAllActiveCharacters();
-        }
+    public List<Character> GetAllActiveCharacters()
+    {
+        return _game.GetAllActiveCharacters();
     }
 }

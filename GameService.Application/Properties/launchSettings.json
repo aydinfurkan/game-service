@@ -1,10 +1,17 @@
 ﻿{
   "profiles": {
-    "GameService": {
+    "Development": {
       "commandName": "Project",
-      "dotnetRunMessages": "true",
       "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Development"
+        "DOTNET_ENVIRONMENT": "dev",
+        "CLUSTER": "local"
+      }
+    },
+    "Production": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "prod",
+        "CLUSTER": "local"
       }
     }
   }

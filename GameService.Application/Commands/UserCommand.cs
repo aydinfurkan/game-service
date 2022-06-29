@@ -1,22 +1,21 @@
 using System.Threading.Tasks;
-using GameService.AntiCorruption.UserService;
+using GameService.Anticorruption.UserService;
 using GameService.Domain.Entities;
 
-namespace GameService.Commands
+namespace GameService.Application.Commands;
+
+public class UserCommand
 {
-    public class UserCommand
+    private readonly IUserAntiCorruption _userAntiCorruption;
+
+    public UserCommand(IUserAntiCorruption userAntiCorruption)
     {
-        private readonly IUserAntiCorruption _userAntiCorruption;
-
-        public UserCommand(IUserAntiCorruption userAntiCorruption)
-        {
-            _userAntiCorruption = userAntiCorruption;
-        }
-
-        public async Task UpdateCharacter(string pToken, Character character)
-        {
-            await _userAntiCorruption.ReplaceCharacterAsync(pToken, character);
-        }
-        
+        _userAntiCorruption = userAntiCorruption;
     }
+
+    public async Task UpdateCharacterAsync(string pToken, Character character)
+    {
+        await _userAntiCorruption.ReplaceCharacterAsync(pToken, character);
+    }
+        
 }

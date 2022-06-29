@@ -2,46 +2,44 @@ using System;
 using System.Collections.Generic;
 using GameService.Infrastructure.Protocol.CommonModels;
 
-namespace GameService.Infrastructure.Protocol.ResponseModels
+namespace GameService.Infrastructure.Protocol.ResponseModels;
+
+public class ClientCharacter : ResponseModelBase
 {
-    public class ClientCharacter : ResponseModelBase
-    {
-        public UserCharacter UserCharacter;
+    public UserCharacter UserCharacter;
 
-        public ClientCharacter(UserCharacter userCharacter)
-        {
-            UserCharacter = userCharacter;
-        }
-    }
-    
-    public class ActiveCharacters : ResponseModelBase
+    public ClientCharacter(UserCharacter userCharacter)
     {
-        public List<Character> Characters;
-
-        public ActiveCharacters(List<Character> characters)
-        {
-            Characters = characters;
-        }
+        UserCharacter = userCharacter;
     }
+}
     
-    public class AddCharacter : ResponseModelBase
+public class ActiveCharacters : ResponseModelBase
+{
+    public List<Character> Characters;
+
+    public ActiveCharacters(List<Character> characters)
     {
-        public Character Character;
-
-        public AddCharacter(Character character)
-        {
-            Character = character;
-        }
+        Characters = characters;
     }
+}
     
-    public class DeleteCharacter : ResponseModelBase
+public class AddCharacter : ResponseModelBase
+{
+    public Character Character;
+
+    public AddCharacter(Character character)
     {
-        public Guid CharacterId;
-
-        public DeleteCharacter(Guid characterId)
-        {
-            CharacterId = characterId;
-        }
+        Character = character;
     }
+}
     
+public class DeleteCharacter : ResponseModelBase
+{
+    public Guid CharacterId;
+
+    public DeleteCharacter(Guid characterId)
+    {
+        CharacterId = characterId;
+    }
 }

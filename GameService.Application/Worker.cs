@@ -1,24 +1,21 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
-using GameService.Controllers;
-using GameService.Infrastructure.Logger;
+using GameService.Application.Controllers;
 using Microsoft.Extensions.Hosting;
 
-namespace GameService
+namespace GameService.Application;
+
+public class Worker : BackgroundService
 {
-    public class Worker : BackgroundService
+    private readonly ServerController _serverController;
+
+    public Worker(ServerController serverController)
     {
-        private readonly ServerController _serverController;
+        _serverController = serverController;
+    }
 
-        public Worker(ServerController serverController)
-        {
-            _serverController = serverController;
-        }
-
-        protected override async Task ExecuteAsync(CancellationToken cancellationToken)
-        {
-            await Task.Run(() => _serverController.Init(cancellationToken), cancellationToken);
-        }
+    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
+    {
+        await Task.Run(() => _serverController.Init(cancellationToken), cancellationToken);
     }
 }

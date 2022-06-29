@@ -5,28 +5,27 @@ using GameService.Domain.Entities;
 using GameService.Infrastructure.Logger;
 using GameService.Infrastructure.Protocol.ResponseModels;
 
-namespace GameService.Controllers
-{
-    public class GameClient
-    {
-        public TcpClient TcpClient { get; }
-        public string PToken { get; }
-        public User User { get; }
-        public Character Character { get; }
-        public BlockingCollection<ResponseModelBase> GameQueue { get; }
-        public CancellationTokenSource CancellationTokenSource { get; }
-        public int CorrelationId { get; }
+namespace GameService.Application.Controllers;
 
-        public GameClient(TcpClient tcpClient, string pToken, User user, Character character)
-        {
-            TcpClient = tcpClient;
-            PToken = pToken;
-            User = user;
-            Character = character;
-            CancellationTokenSource = new CancellationTokenSource();
-            GameQueue = new BlockingCollection<ResponseModelBase>();
-            CorrelationId = EventId.New();
-            tcpClient.NoDelay = true;
-        }
+public class GameClient
+{
+    public TcpClient TcpClient { get; }
+    public string PToken { get; }
+    public User User { get; }
+    public Character Character { get; }
+    public BlockingCollection<ResponseModelBase> GameQueue { get; }
+    public CancellationTokenSource CancellationTokenSource { get; }
+    public int CorrelationId { get; }
+
+    public GameClient(TcpClient tcpClient, string pToken, User user, Character character)
+    {
+        TcpClient = tcpClient;
+        PToken = pToken;
+        User = user;
+        Character = character;
+        CancellationTokenSource = new CancellationTokenSource();
+        GameQueue = new BlockingCollection<ResponseModelBase>();
+        CorrelationId = EventId.New();
+        tcpClient.NoDelay = true;
     }
 }

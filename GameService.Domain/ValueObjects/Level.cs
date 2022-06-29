@@ -1,14 +1,13 @@
-namespace GameService.Domain.ValueObjects
-{
-    public class Level
-    {
-        public int Value;
-        public int Experience;
+namespace GameService.Domain.ValueObjects;
 
-        public Level(int experience)
-        {
-            Value = experience / 1000;
-            Experience = experience;
-        }
+public class Level
+{
+    public int Value;
+    public int Experience;
+
+    public Level(int experience)
+    {
+        Value = experience / 1000;
+        Experience = experience;
     }
 }

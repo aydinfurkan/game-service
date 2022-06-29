@@ -1,30 +1,29 @@
 using System;
 using Newtonsoft.Json;
 
-namespace GameService.Infrastructure
+namespace GameService.Infrastructure;
+
+public class DoubleFormatConverter : JsonConverter
 {
-    public class DoubleFormatConverter : JsonConverter
+    public override bool CanConvert(Type objectType)
     {
-        public override bool CanConvert(Type objectType)
-        {
-            return objectType == typeof(double);
-        }
+        return objectType == typeof(double);
+    }
 
-        public override void WriteJson(JsonWriter writer, object value, 
-            JsonSerializer serializer)
+    public override void WriteJson(JsonWriter writer, object value, 
+        JsonSerializer serializer)
+    {
+        if (value is double d)
         {
-            if (value is double d)
-            {
-                writer.WriteValue(Math.Round(d, 2));
-            }
+            writer.WriteValue(Math.Round(d, 2));
         }
+    }
 
-        public override bool CanRead => false;
+    public override bool CanRead => false;
 
-        public override object ReadJson(JsonReader reader, Type objectType,
-            object existingValue, JsonSerializer serializer)
-        {
-            throw new NotImplementedException();    
-        }
-    }   
+    public override object ReadJson(JsonReader reader, Type objectType,
+        object existingValue, JsonSerializer serializer)
+    {
+        throw new NotImplementedException();    
+    }
 }

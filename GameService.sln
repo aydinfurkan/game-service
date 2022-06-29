@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameService.Domain", "GameS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameService.Infrastructure", "GameService.Infrastructure\GameService.Infrastructure.csproj", "{6706D563-667B-4B83-ADEA-A9DB7C9657F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameService.AntiCorruption", "GameService.AntiCorruption\GameService.AntiCorruption.csproj", "{E6AA98C8-F370-4B54-A4B0-BEAE9F6B5127}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameService.Anticorruption", "GameService.Anticorruption\GameService.Anticorruption.csproj", "{E6AA98C8-F370-4B54-A4B0-BEAE9F6B5127}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
