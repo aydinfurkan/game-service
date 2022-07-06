@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\GameService.Infrastructure\GameService.Infrastructure.csproj" />
+      <ProjectReference Include="..\GameService.TcpServer.Infrastructure\GameService.TcpServer.Infrastructure.csproj" />
+    </ItemGroup>
+
+</Project>

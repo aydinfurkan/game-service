@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MediatR" Version="10.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+        <PackageReference Include="NLog.Extensions.Logging" Version="5.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\GameService.Anticorruption.UserService\GameService.Anticorruption.UserService.csproj" />
+      <ProjectReference Include="..\GameService.Domain\GameService.Domain.csproj" />
+      <ProjectReference Include="..\GameService.Infrastructure\GameService.Infrastructure.csproj" />
+      <ProjectReference Include="..\GameService.TcpServer\GameService.TcpServer.csproj" />
+    </ItemGroup>
+</Project>
