@@ -7,6 +7,7 @@ using GameService.Anticorruption.Configs;
 using GameService.Anticorruption.UserService.Models.Request;
 using GameService.Anticorruption.UserService.Models.Response;
 using GameService.Domain.Entities;
+using GameService.Domain.Entities.CharacterAggregate;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 

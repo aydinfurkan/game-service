@@ -23,13 +23,21 @@ public class TickHandler: AsyncRequestHandler<ClientInputCommand<ElapsedEventArg
 
         if (change.HealthChange(out var hResult))
         {
-            var responseCharacterHealth = new CharacterHealth(hResult.CharacterId, hResult.Health);
+            var responseCharacterHealth = new CharacterHealth
+            {
+                CharacterId = hResult.CharacterId,
+                Health = hResult.Health
+            };
             _server.PushGameQueues(responseCharacterHealth);
         }
 
         if (change.ManaChange(out var mResult))
         {
-            var responseCharacterMana = new CharacterMana(mResult.CharacterId, mResult.Mana);
+            var responseCharacterMana = new CharacterMana
+            {
+                CharacterId = mResult.CharacterId,
+                Mana = mResult.Mana
+            };
             _server.PushGameQueues(responseCharacterMana);
         }
 

@@ -17,49 +17,49 @@ public class CharacterController: ICharacterController
         _mediator = mediator;
     }
 
-    public async Task Send<T>(Game game, Client client, T receivedData) where T : ReceiveModelData
+    public async Task Send<T>(Game game, Client client, T receivedData) where T : CommandBaseData
     {
         switch (receivedData)
         {
-            case VerificationModel m:
+            case VerificationCommand m:
             {
-                var command = new ClientInputCommand<VerificationModel>(game, client, m);
+                var command = new ClientInputCommand<VerificationCommand>(game, client, m);
                 await _mediator.Send(command);
                 return;
             }
-            case PositionModel m:
+            case ChangePositionCommand m:
             {
-                var command = new ClientInputCommand<PositionModel>(game, client, m);
+                var command = new ClientInputCommand<ChangePositionCommand>(game, client, m);
                 await _mediator.Send(command);
                 return;
             }
-            case QuaternionModel m:
+            case ChangeQuaternionCommand m:
             {
-                var command = new ClientInputCommand<QuaternionModel>(game, client, m);
+                var command = new ClientInputCommand<ChangeQuaternionCommand>(game, client, m);
                 await _mediator.Send(command);
                 return;
             }
-            case MoveStateModel m:
+            case ChangeMoveStateCommand m:
             {
-                var command = new ClientInputCommand<MoveStateModel>(game, client, m);
+                var command = new ClientInputCommand<ChangeMoveStateCommand>(game, client, m);
                 await _mediator.Send(command);
                 return;
             }
-            case JumpStateModel m:
+            case ChangeJumpStateCommand m:
             {
-                var command = new ClientInputCommand<JumpStateModel>(game, client, m);
+                var command = new ClientInputCommand<ChangeJumpStateCommand>(game, client, m);
                 await _mediator.Send(command);
                 return;
             }
-            case SkillStateModel m:
+            case ChangeSkillStateCommand m:
             {
-                var command = new ClientInputCommand<SkillStateModel>(game, client, m);
+                var command = new ClientInputCommand<ChangeSkillStateCommand>(game, client, m);
                 await _mediator.Send(command);
                 return;
             }
-            case SelectCharacterModel m:
+            case SelectCharacterCommand m:
             {
-                var command = new ClientInputCommand<SelectCharacterModel>(game, client, m);
+                var command = new ClientInputCommand<SelectCharacterCommand>(game, client, m);
                 await _mediator.Send(command);
                 return;
             }

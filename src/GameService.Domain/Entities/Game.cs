@@ -1,5 +1,6 @@
 ﻿using GameService.Common.ValueObjects;
 using GameService.Domain.Components;
+using GameService.Domain.Entities.CharacterAggregate;
 
 namespace GameService.Domain.Entities;
 

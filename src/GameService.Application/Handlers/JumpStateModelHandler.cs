@@ -1,11 +1,11 @@
 using GameService.Application.Commands;
+using GameService.Contract.ReceiveModels;
 using GameService.TcpServer.Controllers;
 using MediatR;
-using JumpStateModel = GameService.Contract.ReceiveModels.JumpStateModel;
 
 namespace GameService.Application.Handlers;
 
-public class JumpStateModelHandler: AsyncRequestHandler<ClientInputCommand<JumpStateModel>>
+public class JumpStateModelHandler: AsyncRequestHandler<ClientInputCommand<ChangeJumpStateCommand>>
 {
     private readonly Server _server;
     
@@ -15,10 +15,14 @@ public class JumpStateModelHandler: AsyncRequestHandler<ClientInputCommand<JumpS
         _server = server;
     }
     
-    protected override Task Handle(ClientInputCommand<JumpStateModel> command, CancellationToken cancellationToken)
+    protected override Task Handle(ClientInputCommand<ChangeJumpStateCommand> command, CancellationToken cancellationToken)
     {
         command.Client.Character.JumpState = command.Input.JumpState;
-        var responseModel = new Contract.ResponseModels.JumpStateModel(command.Client.Character.Id, command.Input.JumpState);
+        var responseModel = new Contract.ResponseModels.JumpStateModel
+        {
+            CharacterId = command.Client.Character.Id,
+            JumpState = command.Input.JumpState
+        };
         _server.PushGameQueues(responseModel, x => x.Character.Id != command.Client.Character.Id);
         return Task.CompletedTask;
     }

@@ -1,14 +1,14 @@
 namespace GameService.Contract.ReceiveModels;
 
-public class MoveStateModel : ReceiveModelData
+public class ChangeMoveStateCommand : CommandBaseData
 {
     public string MoveState { get; set; }
 }
-public class JumpStateModel : ReceiveModelData
+public class ChangeJumpStateCommand : CommandBaseData
 {
     public int JumpState { get; set; }
 }
-public class SkillStateModel : ReceiveModelData
+public class ChangeSkillStateCommand : CommandBaseData
 {
     public int SkillState { get; set; }
 }

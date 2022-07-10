@@ -1,7 +1,7 @@
 
 namespace GameService.Contract.ReceiveModels;
 
-public class VerificationModel : ReceiveModelData
+public class VerificationCommand : CommandBaseData
 {
     public string PToken { get; set; }
     

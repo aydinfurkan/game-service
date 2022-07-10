@@ -1,4 +1,5 @@
 using GameService.Domain.Entities;
+using GameService.Domain.Entities.CharacterAggregate;
 using GameService.Domain.Skills.Results;
 
 namespace GameService.Domain.Skills;

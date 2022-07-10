@@ -2,7 +2,7 @@ using GameService.Common.ValueObjects;
 
 namespace GameService.Contract.ReceiveModels;
 
-public class QuaternionModel : ReceiveModelData
+public class ChangeQuaternionCommand : CommandBaseData
 {
     public Quaternion Quaternion { get; set; }
 }

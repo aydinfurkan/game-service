@@ -1,3 +1,5 @@
+using GameService.Domain.Entities.CharacterAggregate;
+
 namespace GameService.Domain.Entities;
 
 public class User

@@ -50,7 +50,7 @@ public class Server
     {
         return _protocol.Write(tcpClient, obj);
     }
-    public ReceiveModelData? Read(TcpClient tcpClient)
+    public CommandBaseData? Read(TcpClient tcpClient)
     {
         return _protocol.Read(tcpClient);
     }

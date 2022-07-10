@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Net.Sockets;
 using GameService.Contract.ResponseModels;
 using GameService.Domain.Entities;
+using GameService.Domain.Entities.CharacterAggregate;
 using GameService.Infrastructure.Logger;
 
 namespace GameService.TcpServer.Controllers;

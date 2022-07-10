@@ -39,12 +39,12 @@
 //     //     {
 //     //         var ok = clientInput.Input switch
 //     //         {
-//     //             PositionModel o => _inputHandler.HandlePosition(o, clientInput.Client),
-//     //             QuaternionModel o => _inputHandler.HandleQuaternion(o, clientInput.Client),
-//     //             MoveStateModel o => _inputHandler.HandleMoveState(o, clientInput.Client),
-//     //             JumpStateModel o => _inputHandler.HandleJumpState(o, clientInput.Client),
-//     //             SelectCharacterModel o => _inputHandler.HandleSelectCharacter(o, clientInput.Client),
-//     //             SkillStateModel o => _inputHandler.HandleSkillState(o, clientInput.Client),
+//     //             ChangePositionCommand o => _inputHandler.HandlePosition(o, clientInput.Client),
+//     //             ChangeQuaternionCommand o => _inputHandler.HandleQuaternion(o, clientInput.Client),
+//     //             ChangeMoveStateCommand o => _inputHandler.HandleMoveState(o, clientInput.Client),
+//     //             ChangeJumpStateCommand o => _inputHandler.HandleJumpState(o, clientInput.Client),
+//     //             SelectCharacterCommand o => _inputHandler.HandleSelectCharacter(o, clientInput.Client),
+//     //             ChangeSkillStateCommand o => _inputHandler.HandleSkillState(o, clientInput.Client),
 //     //             _ => false
 //     //         };
 //     //     }
@@ -60,7 +60,7 @@
 //
 //         try
 //         {
-//             if (clientInput.Input is ReceiveModelData receiveModelData)
+//             if (clientInput.Input is CommandBaseData receiveModelData)
 //             {
 //                 _characterController.Send(clientInput.Client, receiveModelData);
 //             }

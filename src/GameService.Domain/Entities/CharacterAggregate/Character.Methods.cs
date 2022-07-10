@@ -1,53 +1,42 @@
-using GameService.Common.ValueObjects;
-using GameService.Contract.Enums;
-using GameService.Domain.Components;
-using GameService.Domain.Entities.CharacterAggregate;
+using GameService.Contract.CommonModels;
 using GameService.Domain.Skills;
-using GameService.Domain.State;
 
-namespace GameService.Domain.Entities;
+namespace GameService.Domain.Entities.CharacterAggregate;
 
-public class Character
+public partial class Character
 {
-    public Guid Id;
-    public string Name;
-    public string Class;
-        
-    public Position Position;
-    public Quaternion Quaternion;
-
-    public Attributes Attributes;
-    public Level Level;
-    public Stats Stats;
-    public double Health;
-    public double Mana;
-    public bool IsDead;
-    public SkillStatus SkillStatus = new ();
-        
-    public Character Target;
-    public List<CharacterSkill> CharacterSkills;
-
-    public CharacterState State = CharacterState.Idle;
-    public string MoveState;
-    public int JumpState;
-    
-    public DateTime LastTick;
-    public Character(Guid id, string name, string @class, Position position, Quaternion quaternion, Attributes attributes, int experience)
+    public UserCharacterDto ToUserCharacterDto()
     {
-        Id = id;
-        Name = name;
-        Class = @class;
-        Position = position;
-        Quaternion = quaternion;
-        Attributes = attributes;
-        Level = new Level(experience);
-        Stats = new Stats(attributes, Level);
-        Health = Stats.MaxHealth;
-        Mana = Stats.MaxMana;
-        CharacterSkills = GetCharacterSkills();
-        LastTick = DateTime.Now;
+        return new UserCharacterDto
+        {
+            Id = Id,
+            Name = Name,
+            Class = Class,
+            Position = Position,
+            Quaternion = Quaternion,
+            Stats = Stats,
+            Attributes = Attributes,
+            Health = Health,
+            Mana = Mana
+        };
     }
-        
+    
+    public CharacterDto ToCharacterDto()
+    {
+        return new CharacterDto
+        {
+            Id = Id,
+            Name = Name,
+            Class = Class,
+            Position = Position,
+            Quaternion = Quaternion,
+            MaxHealth = Stats.MaxHealth,
+            MaxMana = Stats.MaxMana,
+            Health = Health,
+            Mana = Mana
+        };
+    }
+
     public bool Tick(DateTime signalTime, out IChange change)
     {
         var delta = (signalTime - LastTick).Milliseconds / 1000.0;
@@ -108,5 +97,4 @@ public class Character
             }
         };
     }
-
 }

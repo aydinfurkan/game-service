@@ -5,7 +5,7 @@ using MediatR;
 
 namespace GameService.Application.Handlers;
 
-public class SelectCharacterModelHandler: AsyncRequestHandler<ClientInputCommand<SelectCharacterModel>>
+public class SelectCharacterModelHandler: AsyncRequestHandler<ClientInputCommand<SelectCharacterCommand>>
 {
     private readonly Server _server;
     
@@ -15,7 +15,7 @@ public class SelectCharacterModelHandler: AsyncRequestHandler<ClientInputCommand
         _server = server;
     }
     
-    protected override Task Handle(ClientInputCommand<SelectCharacterModel> command, CancellationToken cancellationToken)
+    protected override Task Handle(ClientInputCommand<SelectCharacterCommand> command, CancellationToken cancellationToken)
     {
         command.Client.Character.Target = command.Game.GetAllActiveCharacters()
             .FirstOrDefault(x => x.Id == command.Input.CharacterId);

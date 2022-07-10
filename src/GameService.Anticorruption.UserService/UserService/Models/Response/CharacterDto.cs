@@ -1,6 +1,7 @@
 ﻿using System;
 using GameService.Common.ValueObjects;
 using GameService.Domain.Entities;
+using GameService.Domain.Entities.CharacterAggregate;
 
 namespace GameService.Anticorruption.UserService.Models.Response;
 

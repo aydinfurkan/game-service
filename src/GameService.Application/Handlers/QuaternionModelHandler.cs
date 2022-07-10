@@ -1,11 +1,11 @@
 using GameService.Application.Commands;
+using GameService.Contract.ReceiveModels;
 using GameService.TcpServer.Controllers;
 using MediatR;
-using QuaternionModel = GameService.Contract.ReceiveModels.QuaternionModel;
 
 namespace GameService.Application.Handlers;
 
-public class QuaternionModelHandler: AsyncRequestHandler<ClientInputCommand<QuaternionModel>>
+public class QuaternionModelHandler: AsyncRequestHandler<ClientInputCommand<ChangeQuaternionCommand>>
 {
     private readonly Server _server;
     
@@ -15,10 +15,14 @@ public class QuaternionModelHandler: AsyncRequestHandler<ClientInputCommand<Quat
         _server = server;
     }
     
-    protected override Task Handle(ClientInputCommand<QuaternionModel> command, CancellationToken cancellationToken)
+    protected override Task Handle(ClientInputCommand<ChangeQuaternionCommand> command, CancellationToken cancellationToken)
     {
         command.Client.Character.Quaternion = command.Input.Quaternion;
-        var responseModel = new Contract.ResponseModels.QuaternionModel(command.Client.Character.Id, command.Input.Quaternion);
+        var responseModel = new Contract.ResponseModels.QuaternionModel
+        {
+            CharacterId = command.Client.Character.Id,
+            Quaternion = command.Input.Quaternion
+        };
         _server.PushGameQueues(responseModel, x => x.Character.Id != command.Client.Character.Id);
         return Task.CompletedTask;
     }

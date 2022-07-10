@@ -1,6 +1,6 @@
 namespace GameService.Contract.ReceiveModels;
 
-public class SelectCharacterModel : ReceiveModelData
+public class SelectCharacterCommand : CommandBaseData
 {
     public Guid CharacterId { get; set; }
 }

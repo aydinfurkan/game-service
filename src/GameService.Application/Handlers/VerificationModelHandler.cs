@@ -8,7 +8,7 @@ using MediatR;
 
 namespace GameService.Application.Handlers;
 
-public class VerificationModelHandler: AsyncRequestHandler<ClientInputCommand<VerificationModel>>
+public class VerificationModelHandler: AsyncRequestHandler<ClientInputCommand<VerificationCommand>>
 {
     private readonly Server _server;
     private readonly IUserAntiCorruption _userAntiCorruption;
@@ -21,7 +21,7 @@ public class VerificationModelHandler: AsyncRequestHandler<ClientInputCommand<Ve
         _server = server;
     }
     
-    protected override async Task Handle(ClientInputCommand<VerificationModel> command, CancellationToken cancellationToken)
+    protected override async Task Handle(ClientInputCommand<VerificationCommand> command, CancellationToken cancellationToken)
     {
         var input = command.Input;
         var client = command.Client;
@@ -36,16 +36,25 @@ public class VerificationModelHandler: AsyncRequestHandler<ClientInputCommand<Ve
         
         _server.AddClient(client);
 
-        var userPlayer = new UserCharacterDto(character);
-        var userCharacter = new CharacterDto(character);
-        var userCharacterResponseModel = new ClientCharacter(userPlayer);
+        var userPlayer = character.ToUserCharacterDto();
+        var userCharacter = character.ToCharacterDto();
+        var userCharacterResponseModel = new ClientCharacter
+        {
+            UserCharacterDto = userPlayer
+        };
         _server.PushGameQueues(userCharacterResponseModel, x => x.Character.Id == client.Character.Id);
 
-        var activeCharacters = command.Game.GetAllActiveCharacters().Select(x => new CharacterDto(x)).ToList(); 
-        var activeCharactersResponseModel = new ActiveCharacters(activeCharacters);
+        var activeCharacters = command.Game.GetAllActiveCharacters().Select(x => x.ToCharacterDto()).ToList(); 
+        var activeCharactersResponseModel = new ActiveCharacters
+        {
+            Characters = activeCharacters
+        };
         _server.PushGameQueues(activeCharactersResponseModel, x => x.Character.Id == client.Character.Id);
 
-        var addCharacterResponseModel = new AddCharacter(userCharacter);
+        var addCharacterResponseModel = new AddCharacter
+        {
+            CharacterDto = userCharacter
+        };
         _server.PushGameQueues(addCharacterResponseModel, x => x.Character.Id != client.Character.Id);
         
         command.Game.AddCharacter(client.Character);
