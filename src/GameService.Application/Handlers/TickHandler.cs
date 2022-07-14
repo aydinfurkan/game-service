@@ -18,27 +18,35 @@ public class TickHandler: AsyncRequestHandler<ClientInputCommand<ElapsedEventArg
 
     protected override Task Handle(ClientInputCommand<ElapsedEventArgs> command, CancellationToken cancellationToken)
     {
-        var ok = command.Client.Character.Tick(command.Input.SignalTime, out var change);
+        if (command.Client.Character == null)
+        {
+            return Task.CompletedTask;
+        }
+        
+        var ok = command.Client.Character.TryTick(command.Input.SignalTime, out var changeList);
         if (!ok) return Task.CompletedTask;
 
-        if (change.HealthChange(out var hResult))
+        foreach (var change in changeList)    
         {
-            var responseCharacterHealth = new CharacterHealth
+            if (change.HealthChange(out var hResult))
             {
-                CharacterId = hResult.CharacterId,
-                Health = hResult.Health
-            };
-            _server.PushGameQueues(responseCharacterHealth);
-        }
+                var responseCharacterHealth = new CharacterHealth
+                {
+                    CharacterId = hResult.CharacterId,
+                    Health = hResult.Health
+                };
+                _server.PushGameQueues(responseCharacterHealth);
+            }
 
-        if (change.ManaChange(out var mResult))
-        {
-            var responseCharacterMana = new CharacterMana
+            if (change.ManaChange(out var mResult))
             {
-                CharacterId = mResult.CharacterId,
-                Mana = mResult.Mana
-            };
-            _server.PushGameQueues(responseCharacterMana);
+                var responseCharacterMana = new CharacterMana
+                {
+                    CharacterId = mResult.CharacterId,
+                    Mana = mResult.Mana
+                };
+                _server.PushGameQueues(responseCharacterMana);
+            }
         }
 
         return Task.CompletedTask;

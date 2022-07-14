@@ -2,14 +2,17 @@ using GameService.Domain.Skills;
 
 namespace GameService.Domain.Entities.CharacterAggregate;
 
-public record Skill
+public class Skill
 {
+    public static readonly List<Skill> All = new List<Skill>();
+    
     public static readonly Skill WarriorBasicAttack = new Skill(1, 0, 5, 1000, 0, false);
     public static readonly Skill ArcherBasicAttack = new Skill(2, 0, 35, 1000, 0, false);
-    public static readonly Skill MageBasicAttack = new Skill(3, 0, 30, 1000, 0, false);
+    public static readonly Skill MageBasicAttack = new Skill(3, 0, 30, 1000, 1000, false);
     public static readonly Skill HealerBasicAttack = new Skill(4, 0, 30, 1000, 0, false);
         
     public static readonly Skill Fireball = new Skill(5, 10, 40, 10000, 1000, false);
+
 
     public readonly int Code;
     public readonly int ManaCost;
@@ -25,9 +28,11 @@ public record Skill
         BaseCooldown = baseCooldown;
         CastTime = castTime;
         SelfCast = selfCast;
+        
+        Skill.All.Add(this);
     }
 
-    public IChange Cast(Character user, Character target)
+    public IChange? Cast(Character user, Character target)
     {
         return Code switch
         {

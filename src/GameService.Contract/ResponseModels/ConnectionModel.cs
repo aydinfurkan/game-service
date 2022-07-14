@@ -4,17 +4,17 @@ namespace GameService.Contract.ResponseModels;
 
 public class ClientCharacter : ResponseModelData
 {
-    public UserCharacterDto UserCharacterDto { get; set; }
+    public UserCharacter UserCharacter { get; set; }
 }
     
 public class ActiveCharacters : ResponseModelData
 {
-    public List<CharacterDto> Characters { get; set; }
+    public List<Character> Characters { get; set; }
 }
     
 public class AddCharacter : ResponseModelData
 {
-    public CharacterDto CharacterDto { get; set; }
+    public Character Character { get; set; }
 }
     
 public class DeleteCharacter : ResponseModelData

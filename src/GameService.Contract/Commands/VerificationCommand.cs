@@ -1,5 +1,5 @@
 
-namespace GameService.Contract.ReceiveModels;
+namespace GameService.Contract.Commands;
 
 public class VerificationCommand : CommandBaseData
 {

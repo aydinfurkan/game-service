@@ -1,6 +1,6 @@
 using GameService.Common.ValueObjects;
 
-namespace GameService.Contract.ReceiveModels;
+namespace GameService.Contract.Commands;
 
 public class ChangeQuaternionCommand : CommandBaseData
 {

@@ -1,4 +1,4 @@
-namespace GameService.Contract.ReceiveModels;
+namespace GameService.Contract.Commands;
 
 public class ChangeMoveStateCommand : CommandBaseData
 {
@@ -7,8 +7,4 @@ public class ChangeMoveStateCommand : CommandBaseData
 public class ChangeJumpStateCommand : CommandBaseData
 {
     public int JumpState { get; set; }
-}
-public class ChangeSkillStateCommand : CommandBaseData
-{
-    public int SkillState { get; set; }
 }

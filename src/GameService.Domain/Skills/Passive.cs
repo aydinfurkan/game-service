@@ -14,7 +14,7 @@ public class Passive : IChange
         _user = user;
         _delta = delta;
     }
-    public bool HealthChange(out HealthResult result)
+    public bool HealthChange(out HealthResult? result)
     {
         if (Math.Abs(_user.Health - _user.Stats.MaxHealth) < 10e-2)
         {
@@ -29,7 +29,7 @@ public class Passive : IChange
         return true;
     }
 
-    public bool ManaChange(out ManaResult result)
+    public bool ManaChange(out ManaResult? result)
     {
         if (Math.Abs(_user.Mana - _user.Stats.MaxMana) < 10e-2)
         {
@@ -43,7 +43,7 @@ public class Passive : IChange
         return true;
     }
 
-    public bool StatsChange(out StatsResult result)
+    public bool StatsChange(out StatsResult? result)
     {
         result = null;
         return false;

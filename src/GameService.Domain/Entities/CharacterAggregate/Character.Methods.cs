@@ -1,13 +1,15 @@
+using GameService.Contract.Commands;
 using GameService.Contract.CommonModels;
+using GameService.Contract.Enums;
 using GameService.Domain.Skills;
 
 namespace GameService.Domain.Entities.CharacterAggregate;
 
 public partial class Character
 {
-    public UserCharacterDto ToUserCharacterDto()
+    public UserCharacter ToUserCharacter()
     {
-        return new UserCharacterDto
+        return new UserCharacter
         {
             Id = Id,
             Name = Name,
@@ -21,9 +23,9 @@ public partial class Character
         };
     }
     
-    public CharacterDto ToCharacterDto()
+    public Contract.CommonModels.Character ToCharacter()
     {
-        return new CharacterDto
+        return new Contract.CommonModels.Character
         {
             Id = Id,
             Name = Name,
@@ -37,61 +39,125 @@ public partial class Character
         };
     }
 
-    public bool Tick(DateTime signalTime, out IChange change)
+    public void ChangePosition(ChangePositionCommand command)
     {
-        var delta = (signalTime - LastTick).Milliseconds / 1000.0;
+        CharacterStateMachine.Fire(command);
+        
+        Position = command.Position;
+    }
+    
+    public void ChangeQuaternion(ChangeQuaternionCommand command)
+    {
+        CharacterStateMachine.Fire(command);
+        
+        Quaternion = command.Quaternion;
+    }
+
+    public void ChangeJumpState(ChangeJumpStateCommand command)
+    {
+        CharacterStateMachine.Fire(command);
+        
+        JumpState = command.JumpState;
+    }
+    
+    public void ChangeMoveState(ChangeMoveStateCommand command)
+    {
+        CharacterStateMachine.Fire(command);
+        
+        MoveState = command.MoveState;
+    }
+
+    public void SelectCharacter(SelectCharacterCommand command, Game game)
+    {
+        CharacterStateMachine.Fire(command);
+        
+        Target = game.GetAllActiveCharacters().FirstOrDefault(x => x.Id == command.CharacterId);
+    }
+    
+    public bool TryTick(DateTime signalTime, out List<IChange> changeList)
+    {
+        var delta = (signalTime - LastTick).TotalMilliseconds / 1000.0;
         LastTick = signalTime;
 
-        if(Health < 10e-2)
+        changeList = new List<IChange>();
+        
+        if (Health < 10e-2)
         {
             IsDead = true;
-            change = null;
             return false;
         }
+        
+        if (CharacterStateMachine.CurrentCharacterState == CharacterState.Casting)
+        {
+            var ok = TryExecuteSkill(out var change);
             
-        change = new Passive(this, delta);
+            if (ok && change != null)
+            {
+                changeList.Add(change);
+            }
+        }
+            
+        var passive = new Passive(this, delta);
+        changeList.Add(passive);
         return true;
     }
         
-    public bool TryCastSkill(int skillCode, out IChange change)
+    public bool TryCastSkill(CastSkillCommand command, out IChange? change)
     {
-        var characterSkill = CharacterSkills.FirstOrDefault(x => x.Skill.Code == skillCode);
+        CharacterStateMachine.Fire(command, command.SkillState);
+        
+        SkillState = command.SkillState;
+        
+        CurrentCastingSkill = LearnedSkills.FirstOrDefault(x => x.Skill.Code == SkillState);
 
-        if (characterSkill != null)
+        if (CurrentCastingSkill == null)
         {
-            if (characterSkill.Skill.CastTime > 0)
-            {
-                return SkillStatus.StartCasting(Target, characterSkill, out change);
-            }
-            return characterSkill.TryCast(Target, out change);
+            change = null;
+            return false;
         }
-            
-        change = null;
-        return false;
+
+        return CurrentCastingSkill.TryCast(Target, out change);
     }
 
-    private List<CharacterSkill> GetCharacterSkills()
+    private bool TryExecuteSkill(out IChange? change)
+    {
+        if (CurrentCastingSkill == null)
+        {
+            change = null;
+            return false;
+        }
+        
+        var ok = CurrentCastingSkill.TryExecute(Target, out change);
+        if (ok)
+        {
+            var command = new ExecuteCurrentCastingSkillCommand();
+            CharacterStateMachine.Fire(command);
+        }
+        return ok;
+    }
+
+    private List<LearnedSkill> GetLearnedSkills()
     {
         return Class switch
         {
-            "warrior" => new List<CharacterSkill>
+            "warrior" => new List<LearnedSkill>
             {
                 new(Skill.WarriorBasicAttack, this)
             },
-            "archer" => new List<CharacterSkill>
+            "archer" => new List<LearnedSkill>
             {
                 new(Skill.ArcherBasicAttack, this)
             },
-            "mage" => new List<CharacterSkill>
+            "mage" => new List<LearnedSkill>
             {
                 new(Skill.MageBasicAttack, this), 
                 new(Skill.Fireball, this)
             },
-            "healer" => new List<CharacterSkill>
+            "healer" => new List<LearnedSkill>
             {
                 new(Skill.HealerBasicAttack, this)
             },
-            _ => new List<CharacterSkill>
+            _ => new List<LearnedSkill>
             {
                 new(Skill.WarriorBasicAttack, this)
             }

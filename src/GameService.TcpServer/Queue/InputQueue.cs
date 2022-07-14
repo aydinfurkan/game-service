@@ -44,7 +44,7 @@
 //     //             ChangeMoveStateCommand o => _inputHandler.HandleMoveState(o, clientInput.Client),
 //     //             ChangeJumpStateCommand o => _inputHandler.HandleJumpState(o, clientInput.Client),
 //     //             SelectCharacterCommand o => _inputHandler.HandleSelectCharacter(o, clientInput.Client),
-//     //             ChangeSkillStateCommand o => _inputHandler.HandleSkillState(o, clientInput.Client),
+//     //             CastSkillCommand o => _inputHandler.HandleSkillState(o, clientInput.Client),
 //     //             _ => false
 //     //         };
 //     //     }

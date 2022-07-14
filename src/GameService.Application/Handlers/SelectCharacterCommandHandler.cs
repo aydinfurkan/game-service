@@ -1,24 +1,24 @@
 using GameService.Application.Commands;
-using GameService.Contract.ReceiveModels;
+using GameService.Contract.Commands;
 using GameService.TcpServer.Controllers;
 using MediatR;
 
 namespace GameService.Application.Handlers;
 
-public class SelectCharacterModelHandler: AsyncRequestHandler<ClientInputCommand<SelectCharacterCommand>>
+public class SelectCharacterCommandHandler: AsyncRequestHandler<ClientInputCommand<SelectCharacterCommand>>
 {
     private readonly Server _server;
     
     
-    public SelectCharacterModelHandler(Server server)
+    public SelectCharacterCommandHandler(Server server)
     {
         _server = server;
     }
     
     protected override Task Handle(ClientInputCommand<SelectCharacterCommand> command, CancellationToken cancellationToken)
     {
-        command.Client.Character.Target = command.Game.GetAllActiveCharacters()
-            .FirstOrDefault(x => x.Id == command.Input.CharacterId);
+        command.Client.Character?.SelectCharacter(command.Input, command.Game);
+        
         return Task.CompletedTask;
     }
 }

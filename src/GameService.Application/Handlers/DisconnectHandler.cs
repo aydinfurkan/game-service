@@ -25,14 +25,20 @@ public class DisconnectHandler: AsyncRequestHandler<ClientCommand>
         var game = command.Game;
         var character = client.Character;
         
+        if (character == null)
+        {
+            return;
+        }
+        
         await _userAntiCorruption.ReplaceCharacterAsync(character);
         
-        game.DeleteCharacter(client.Character);
+        game.DeleteCharacter(character);
         
         var deleteCharacterResponseModel = new DeleteCharacter
         {
-            CharacterId = command.Client.Character.Id
+            CharacterId = character.Id
         };
+        
         _server.PushGameQueues(deleteCharacterResponseModel, x => x.Character.Id != command.Client.Character.Id);
     }
 }

@@ -1,5 +1,5 @@
 using System.Net.Sockets;
-using GameService.Contract.ReceiveModels;
+using GameService.Contract.Commands;
 using GameService.Contract.ResponseModels;
 
 namespace GameService.TcpServer.Infrastructure.Protocol;

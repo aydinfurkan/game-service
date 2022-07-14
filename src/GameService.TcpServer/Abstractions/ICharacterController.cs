@@ -1,5 +1,5 @@
 using System.Timers;
-using GameService.Contract.ReceiveModels;
+using GameService.Contract.Commands;
 using GameService.Domain.Entities;
 using GameService.TcpServer.Controllers;
 

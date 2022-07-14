@@ -1,6 +1,6 @@
 using System.Timers;
 using GameService.Application.Commands;
-using GameService.Contract.ReceiveModels;
+using GameService.Contract.Commands;
 using GameService.Domain.Entities;
 using GameService.TcpServer.Abstractions;
 using GameService.TcpServer.Controllers;
@@ -51,9 +51,9 @@ public class CharacterController: ICharacterController
                 await _mediator.Send(command);
                 return;
             }
-            case ChangeSkillStateCommand m:
+            case CastSkillCommand m:
             {
-                var command = new ClientInputCommand<ChangeSkillStateCommand>(game, client, m);
+                var command = new ClientInputCommand<CastSkillCommand>(game, client, m);
                 await _mediator.Send(command);
                 return;
             }

@@ -1,15 +1,15 @@
 using GameService.Application.Commands;
-using GameService.Contract.ReceiveModels;
+using GameService.Contract.Commands;
 using GameService.TcpServer.Controllers;
 using MediatR;
 
 namespace GameService.Application.Handlers;
 
-public class PositionModelHandler: AsyncRequestHandler<ClientInputCommand<ChangePositionCommand>>
+public class ChangePositionCommandHandler: AsyncRequestHandler<ClientInputCommand<ChangePositionCommand>>
 {
     private readonly Server _server;
     
-    public PositionModelHandler(
+    public ChangePositionCommandHandler(
         Server server)
     {
         _server = server;
@@ -17,13 +17,21 @@ public class PositionModelHandler: AsyncRequestHandler<ClientInputCommand<Change
     
     protected override Task Handle(ClientInputCommand<ChangePositionCommand> command, CancellationToken cancellationToken)
     {
-        command.Client.Character.Position = command.Input.Position;
+        if (command.Client.Character == null)
+        {
+            return Task.CompletedTask;
+        }
+        
+        command.Client.Character.ChangePosition(command.Input);
+        
         var responseModel = new Contract.ResponseModels.PositionModel
         {
             CharacterId = command.Client.Character.Id,
             Position = command.Input.Position
         };
-        _server.PushGameQueues(responseModel, x => x.Character.Id != command.Client.Character.Id);
+        
+        _server.PushGameQueues(responseModel, x => x.Character?.Id != command.Client.Character.Id);
+        
         return Task.CompletedTask;
     }
 }

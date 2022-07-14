@@ -1,6 +1,5 @@
 using GameService.Common.ValueObjects;
-using GameService.Contract.Enums;
-using GameService.Domain.Components;
+using GameService.Domain.StateMachine;
 
 namespace GameService.Domain.Entities.CharacterAggregate;
 
@@ -19,16 +18,19 @@ public partial class Character
     public double Health;
     public double Mana;
     public bool IsDead;
-    public SkillStatus SkillStatus = new ();
         
-    public Character Target;
-    public List<CharacterSkill> CharacterSkills;
+    public Character? Target;
+    public List<LearnedSkill> LearnedSkills;
+    public LearnedSkill? CurrentCastingSkill = null;
 
-    public CharacterState State = CharacterState.Idle;
-    public string MoveState;
+    public string MoveState = "";
     public int JumpState;
+    public int SkillState;
+    
+    public CharacterStateMachine CharacterStateMachine;
     
     public DateTime LastTick;
+    
     public Character(Guid id, string name, string @class, Position position, Quaternion quaternion, Attributes attributes, int experience)
     {
         Id = id;
@@ -41,7 +43,8 @@ public partial class Character
         Stats = new Stats(attributes, Level);
         Health = Stats.MaxHealth;
         Mana = Stats.MaxMana;
-        CharacterSkills = GetCharacterSkills();
+        LearnedSkills = GetLearnedSkills();
         LastTick = DateTime.Now;
+        CharacterStateMachine = new CharacterStateMachine();
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Net.Sockets;
-using GameService.Contract.ReceiveModels;
+using GameService.Contract.Commands;
 using GameService.Contract.ResponseModels;
 using GameService.Domain.Entities;
 using GameService.Infrastructure.Logger;
