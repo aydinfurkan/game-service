@@ -34,6 +34,4 @@ public record Stats
         MoveSpeed = 100;
         DropRate = 1;
     }
-
-
 }

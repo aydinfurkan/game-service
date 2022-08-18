@@ -33,7 +33,7 @@ public class VerificationCommandHandler: AsyncRequestHandler<ClientInputCommand<
 
         if (character == null)
         {
-            return;
+            return; // TODO exception
         }
         
         client.SetUser(user);

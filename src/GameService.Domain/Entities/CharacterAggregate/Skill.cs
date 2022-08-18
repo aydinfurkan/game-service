@@ -6,13 +6,12 @@ public class Skill
 {
     public static readonly List<Skill> All = new List<Skill>();
     
-    public static readonly Skill WarriorBasicAttack = new Skill(1, 0, 5, 1000, 0, false);
-    public static readonly Skill ArcherBasicAttack = new Skill(2, 0, 35, 1000, 0, false);
-    public static readonly Skill MageBasicAttack = new Skill(3, 0, 30, 1000, 1000, false);
-    public static readonly Skill HealerBasicAttack = new Skill(4, 0, 30, 1000, 0, false);
-        
-    public static readonly Skill Fireball = new Skill(5, 10, 40, 10000, 1000, false);
-
+    public static readonly Skill WarriorBasicAttack = new Skill(1, 0, 5, 1000, 0, false, null);
+    public static readonly Skill ArcherBasicAttack = new Skill(2, 0, 35, 1000, 0, false, null);
+    public static readonly Skill MageBasicAttack = new Skill(3, 0, 30, 1000, 1000, false, null);
+    public static readonly Skill HealerBasicAttack = new Skill(4, 0, 30, 1000, 0, false, null);
+    
+    public static readonly Skill Fireball = new Skill(5, 10, 40, 10000, 1000, false, Effect.Burn);
 
     public readonly int Code;
     public readonly int ManaCost;
@@ -20,7 +19,8 @@ public class Skill
     public readonly int BaseCooldown;
     public readonly int CastTime;
     public readonly bool SelfCast;
-    private Skill(int code, int manaCost, int range, int baseCooldown, int castTime, bool selfCast)
+    public readonly Effect? Effect;
+    private Skill(int code, int manaCost, int range, int baseCooldown, int castTime, bool selfCast, Effect? effect)
     {
         Code = code;
         ManaCost = manaCost;
@@ -28,7 +28,8 @@ public class Skill
         BaseCooldown = baseCooldown;
         CastTime = castTime;
         SelfCast = selfCast;
-        
+        Effect = effect;
+
         Skill.All.Add(this);
     }
 

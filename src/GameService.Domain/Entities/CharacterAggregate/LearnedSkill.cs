@@ -41,7 +41,7 @@ public class LearnedSkill
 
     public bool TryExecute(Character? target, out IChange? change)
     {
-        var isCastEnd = DateTime.Now >= CastingWillEndAt;
+        var isCastEnd = DateTime.Now >= CastingWillEndAt; // TODO: use isExecuted or maybe stateMachine
 
         if (isCastEnd)
         {

@@ -1,5 +1,5 @@
+using GameService.Common.Enums;
 using GameService.Contract.Commands;
-using GameService.Contract.Enums;
 using GameService.Domain.Entities.CharacterAggregate;
 using Stateless;
 

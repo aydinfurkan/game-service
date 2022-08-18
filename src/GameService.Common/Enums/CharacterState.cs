@@ -1,4 +1,4 @@
-namespace GameService.Contract.Enums;
+namespace GameService.Common.Enums;
 
 public enum CharacterState
 {

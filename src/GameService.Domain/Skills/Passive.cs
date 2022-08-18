@@ -4,7 +4,7 @@ using GameService.Domain.Skills.Results;
 
 namespace GameService.Domain.Skills;
 
-public class Passive : IChange
+public class Passive : ChangeBase
 {
     private readonly Character _user;
     private readonly double _delta;
@@ -14,7 +14,7 @@ public class Passive : IChange
         _user = user;
         _delta = delta;
     }
-    public bool HealthChange(out HealthResult? result)
+    public override bool HealthChange(out HealthResult? result)
     {
         if (Math.Abs(_user.Health - _user.Stats.MaxHealth) < 10e-2)
         {
@@ -29,7 +29,7 @@ public class Passive : IChange
         return true;
     }
 
-    public bool ManaChange(out ManaResult? result)
+    public override bool ManaChange(out ManaResult? result)
     {
         if (Math.Abs(_user.Mana - _user.Stats.MaxMana) < 10e-2)
         {
@@ -41,11 +41,5 @@ public class Passive : IChange
             
         result = new ManaResult(_user.Id, _user.Mana);
         return true;
-    }
-
-    public bool StatsChange(out StatsResult? result)
-    {
-        result = null;
-        return false;
     }
 }

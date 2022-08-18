@@ -1,6 +1,6 @@
+using GameService.Common.Enums;
 using GameService.Contract.Commands;
 using GameService.Contract.CommonModels;
-using GameService.Contract.Enums;
 using GameService.Domain.Skills;
 
 namespace GameService.Domain.Entities.CharacterAggregate;
