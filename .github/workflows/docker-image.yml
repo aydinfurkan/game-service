@@ -6,7 +6,7 @@ on:
 env:
   DOCKER_TAG: game-service
   DOCKER_PORT: 80:5000
-  IMAGE_URL: ghcr.io/aydinfurkan/game-service:${{ github.run_number }}
+  IMAGE_URL: ghcr.io/aydinfurkan/game-service:latest
   CR_PAT: ${{ secrets.CR_PAT }}
   CI_REGISTRY: ghcr.io
 jobs:
