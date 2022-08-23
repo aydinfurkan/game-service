@@ -18,4 +18,4 @@ RUN dotnet publish GameService.csproj -c Release -o /app
 FROM base AS final
 COPY --from=publish /app .
 ENV ASPNETCORE_URLS=http://+:5000
-ENTRYPOINT ["dotnet", "GameService.dll"]
+ENTRYPOINT ["dotnet", "GameService.dll", "--environment=prod"]
