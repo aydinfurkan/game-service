@@ -11,6 +11,7 @@ public abstract class WebSocketProtocol  // https://datatracker.ietf.org/doc/htm
     {
         var stream = client.GetStream();
         var totalBytes = Encoding.UTF8.GetBytes(str);
+        var byteList = new List<byte[]>();
 
         if (totalBytes.Length <= 125)
         {
@@ -25,8 +26,8 @@ public abstract class WebSocketProtocol  // https://datatracker.ietf.org/doc/htm
                 header = (header << 7) + bytes.Count; //Add the length of the part we are going to send
 
                 //Send the header & message to client
-                stream.Write(IntToByteArray((ushort)header));
-                stream.Write(bytes.ToArray());
+                byteList.Add(IntToByteArray((ushort)header));
+                byteList.Add(bytes.ToArray());
             }
         }
         else
@@ -42,12 +43,14 @@ public abstract class WebSocketProtocol  // https://datatracker.ietf.org/doc/htm
                 header = (header << 7) + 126;
                     
                 //Send the header & message to client
-                stream.Write(IntToByteArray((ushort)header));
-                stream.Write(IntToByteArray((ushort)bytes.Count));
-                stream.Write(bytes.ToArray());
+                byteList.Add(IntToByteArray((ushort)header));
+                byteList.Add(IntToByteArray((ushort)bytes.Count));
+                byteList.Add(bytes.ToArray());
             }
         }
-            
+
+        var data = byteList.SelectMany(x => x).ToArray();
+        stream.Write(data);
         return true;
     }
 
