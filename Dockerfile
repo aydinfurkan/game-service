@@ -7,7 +7,7 @@ EXPOSE 5000
 # Build layer
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 COPY . .
-WORKDIR /GameService
+WORKDIR src/GameService
 RUN dotnet build GameService.csproj -c Release -o /app
 
 # Publish dll
