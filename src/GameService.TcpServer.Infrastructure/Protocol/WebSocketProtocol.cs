@@ -134,7 +134,7 @@ public abstract class WebSocketProtocol  // https://datatracker.ietf.org/doc/htm
         header = (header << 1) + 0;//rsv1
         header = (header << 1) + 0;//rsv2
         header = (header << 1) + 0;//rsv3
-        header = (header << 4) + (contFrame ? 0 : 1);//opcode : 0 = continuation frame, 1 = text
+        header = (header << 4) + (contFrame ? 0 : 2);//opcode : 0 = continuation frame, 1 = text, 2 = binary
         header = (header << 1) + 0;//mask: server -> client = no mask
 
         return header;

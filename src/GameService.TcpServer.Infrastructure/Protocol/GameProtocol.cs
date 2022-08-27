@@ -43,20 +43,29 @@ public class GameProtocol : WebSocketProtocol, IProtocol
     {
         var str= base.Read(client);
         var definition = new { Type = 0 };
-        var type = JsonConvert.DeserializeAnonymousType(str, definition);
-        CommandBaseData? requestModelData = type?.Type switch
+        
+        try
         {
-            128 => JsonConvert.DeserializeObject<CommandBase<VerificationCommand>>(str)?.Data,
-            144 => JsonConvert.DeserializeObject<CommandBase<ChangePositionCommand>>(str)?.Data,
-            145 => JsonConvert.DeserializeObject<CommandBase<ChangeQuaternionCommand>>(str)?.Data,
-            160 => JsonConvert.DeserializeObject<CommandBase<ChangeMoveStateCommand>>(str)?.Data,
-            161 => JsonConvert.DeserializeObject<CommandBase<ChangeJumpStateCommand>>(str)?.Data,
-            162 => JsonConvert.DeserializeObject<CommandBase<CastSkillCommand>>(str)?.Data,
-            176 => JsonConvert.DeserializeObject<CommandBase<SelectCharacterCommand>>(str)?.Data,
-            _ => null
-        };
+            var type = JsonConvert.DeserializeAnonymousType(str, definition);
             
-        return requestModelData;
+            CommandBaseData? requestModelData = type?.Type switch
+            {
+                128 => JsonConvert.DeserializeObject<CommandBase<VerificationCommand>>(str)?.Data,
+                144 => JsonConvert.DeserializeObject<CommandBase<ChangePositionCommand>>(str)?.Data,
+                145 => JsonConvert.DeserializeObject<CommandBase<ChangeQuaternionCommand>>(str)?.Data,
+                160 => JsonConvert.DeserializeObject<CommandBase<ChangeMoveStateCommand>>(str)?.Data,
+                161 => JsonConvert.DeserializeObject<CommandBase<ChangeJumpStateCommand>>(str)?.Data,
+                162 => JsonConvert.DeserializeObject<CommandBase<CastSkillCommand>>(str)?.Data,
+                176 => JsonConvert.DeserializeObject<CommandBase<SelectCharacterCommand>>(str)?.Data,
+                _ => null
+            };
+            
+            return requestModelData;
+        }
+        catch
+        {
+            return null;
+        }
     }
         
     public new void HandShake(TcpClient client)
