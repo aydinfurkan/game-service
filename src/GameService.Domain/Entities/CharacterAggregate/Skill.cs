@@ -33,7 +33,16 @@ public class Skill
         Skill.All.Add(this);
     }
 
-    public IChange? Cast(Character user, Character target)
+    public IChange? Cast(Character user)
+    {
+        return Code switch
+        {
+            //5 => new CastBasicAttack(user, target, this), // TODO: cast sonrasi degisiklikler mana azaltma gibi
+            _ => null
+        };
+    }
+    
+    public IChange? Execute(Character user, Character target)
     {
         return Code switch
         {

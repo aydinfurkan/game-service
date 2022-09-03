@@ -9,7 +9,6 @@ public class CharacterStateMachine
 {
     private readonly StateMachine<CharacterState, string> _machine;
     public CharacterState CurrentCharacterState = CharacterState.Idle;
-    private CharacterState _lastCharacterState = CharacterState.Idle;
     private int? _currentSkillState;
     
     public CharacterStateMachine()
@@ -24,8 +23,8 @@ public class CharacterStateMachine
             .PermitReentry(nameof(ChangePositionCommand))
             .PermitReentry(nameof(ChangeQuaternionCommand))
             .PermitReentry(nameof(SelectCharacterCommand))
-            .PermitIf(nameof(CastSkillCommand), CharacterState.Casting, IsSkillCastTimeExist)
-            .PermitReentryIf(nameof(CastSkillCommand), () => !IsSkillCastTimeExist())
+            .PermitIf(nameof(ChangeSkillStateCommand), CharacterState.Casting)
+            .PermitReentryIf(nameof(ChangeSkillStateCommand), () => !IsSkillCastTimeExist())
             .PermitReentry(nameof(ChangeJumpStateCommand))
             .Permit(nameof(ChangeMoveStateCommand), CharacterState.Moving);
 
@@ -33,8 +32,8 @@ public class CharacterStateMachine
             .PermitReentry(nameof(ChangePositionCommand))
             .PermitReentry(nameof(ChangeQuaternionCommand))
             .PermitReentry(nameof(SelectCharacterCommand))
-            .PermitIf(nameof(CastSkillCommand), CharacterState.Casting, IsSkillCastTimeExist)
-            .PermitReentryIf(nameof(CastSkillCommand), () => !IsSkillCastTimeExist())
+            .PermitIf(nameof(ChangeSkillStateCommand), CharacterState.Casting, IsSkillCastTimeExist)
+            .PermitReentryIf(nameof(ChangeSkillStateCommand), () => !IsSkillCastTimeExist())
             .PermitReentry(nameof(ChangeMoveStateCommand))
             .PermitReentry(nameof(ChangeJumpStateCommand));
 
@@ -44,18 +43,13 @@ public class CharacterStateMachine
             .PermitReentry(nameof(SelectCharacterCommand))
             .Permit(nameof(ChangeMoveStateCommand), CharacterState.Moving)
             .Permit(nameof(ChangeJumpStateCommand), CharacterState.Moving)
-            .Permit(nameof(ExecuteCurrentCastingSkillCommand), CharacterState.Moving);
+            .Permit(nameof(CastSkillCommand), CharacterState.Idle);
 
         this._machine.Configure(CharacterState.Dead);
     }
 
     public void Fire(CommandBaseData command)
     {
-        if (CurrentCharacterState != _lastCharacterState)
-        {
-            Console.WriteLine(_lastCharacterState + " -> " + CurrentCharacterState);
-            _lastCharacterState = CurrentCharacterState;
-        }
         this._machine.Fire(command.Name);
     }
     

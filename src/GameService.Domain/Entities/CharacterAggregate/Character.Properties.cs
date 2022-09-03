@@ -23,12 +23,14 @@ public partial class Character
     public List<LearnedSkill> LearnedSkills;
     public List<ActiveEffect> ActiveEffects;
     public LearnedSkill? CurrentCastingSkill = null;
+    public Character? CurrentCastingTarget = null;
 
     public string MoveState = "";
     public int JumpState;
     public int SkillState;
     
-    public CharacterStateMachine CharacterStateMachine;
+    public readonly CharacterStateMachine CharacterStateMachine;
+    public readonly SkillStateMachine SkillStateMachine;
     
     public DateTime LastTick;
     
@@ -47,5 +49,6 @@ public partial class Character
         LearnedSkills = GetLearnedSkills();
         LastTick = DateTime.Now;
         CharacterStateMachine = new CharacterStateMachine();
+        SkillStateMachine = new SkillStateMachine();
     }
 }

@@ -13,6 +13,6 @@ public class JumpStateModel : ResponseModelData
 public class SkillStateModel : ResponseModelData
 {
     public Guid CharacterId { get; set; }
-    public Guid TargetCharacterId { get; set; }
+    public Guid? TargetCharacterId { get; set; }
     public int SkillState { get; set; }
 }

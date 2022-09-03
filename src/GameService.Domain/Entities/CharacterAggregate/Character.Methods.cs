@@ -66,6 +66,17 @@ public partial class Character
         
         MoveState = command.MoveState;
     }
+    
+    public void ChangeSkillState(ChangeSkillStateCommand command)
+    {
+        CharacterStateMachine.Fire(command);
+        SkillStateMachine.Fire(command, CurrentCastingSkill, CurrentCastingTarget);
+        
+        CurrentCastingSkill = LearnedSkills.FirstOrDefault(x => x.Skill.Code == command.SkillState);
+        CurrentCastingSkill?.StartCast();
+        
+        SkillState = command.SkillState;
+    }
 
     public void SelectCharacter(SelectCharacterCommand command, Game game)
     {
@@ -80,23 +91,13 @@ public partial class Character
         LastTick = signalTime;
 
         changeList = new List<IChange>();
-        
+
         if (Health < 10e-2)
         {
             IsDead = true;
             return false;
         }
-        
-        if (CharacterStateMachine.CurrentCharacterState == CharacterState.Casting)
-        {
-            var ok = TryExecuteSkill(out var change);
-            
-            if (ok && change != null)
-            {
-                changeList.Add(change);
-            }
-        }
-            
+
         var passive = new Passive(this, delta);
         changeList.Add(passive);
         return true;
@@ -104,36 +105,30 @@ public partial class Character
         
     public bool TryCastSkill(CastSkillCommand command, out IChange? change)
     {
-        CharacterStateMachine.Fire(command, command.SkillState);
+        CharacterStateMachine.Fire(command, command.SkillId);
+        SkillStateMachine.Fire(command, CurrentCastingSkill, CurrentCastingTarget);
         
-        SkillState = command.SkillState;
-        
-        CurrentCastingSkill = LearnedSkills.FirstOrDefault(x => x.Skill.Code == SkillState);
-
         if (CurrentCastingSkill == null)
         {
             change = null;
             return false;
         }
 
-        return CurrentCastingSkill.TryCast(Target, out change);
+        return CurrentCastingSkill.EndCast(Target, out change);
     }
 
-    private bool TryExecuteSkill(out IChange? change)
+    public bool TryExecuteSkill(ExecuteSkillEffectCommand command, out IChange? change)
     {
+        CharacterStateMachine.Fire(command, command.SkillId);
+        SkillStateMachine.Fire(command, CurrentCastingSkill, CurrentCastingTarget);
+        
         if (CurrentCastingSkill == null)
         {
             change = null;
             return false;
         }
         
-        var ok = CurrentCastingSkill.TryExecute(Target, out change);
-        if (ok)
-        {
-            var command = new ExecuteCurrentCastingSkillCommand();
-            CharacterStateMachine.Fire(command);
-        }
-        return ok;
+        return CurrentCastingSkill.Execute(Target, out change);
     }
 
     private List<LearnedSkill> GetLearnedSkills()

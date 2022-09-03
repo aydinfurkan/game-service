@@ -6,7 +6,7 @@ using MediatR;
 
 namespace GameService.Application.Handlers;
 
-public class ChangeSkillStateCommandHandler: AsyncRequestHandler<ClientInputCommand<CastSkillCommand>>
+public class ChangeSkillStateCommandHandler: AsyncRequestHandler<ClientInputCommand<ChangeSkillStateCommand>>
 {
     private readonly Server _server;
     
@@ -16,34 +16,24 @@ public class ChangeSkillStateCommandHandler: AsyncRequestHandler<ClientInputComm
         _server = server;
     }
     
-    protected override Task Handle(ClientInputCommand<CastSkillCommand> command, CancellationToken cancellationToken)
+    protected override Task Handle(ClientInputCommand<ChangeSkillStateCommand> command, CancellationToken cancellationToken)
     {
         if (command.Client.Character == null)
         {
             return Task.CompletedTask;
         }
         
-        var ok = command.Client.Character.TryCastSkill(command.Input, out var castSkill);
-        if (!ok) return Task.CompletedTask;
-            
-        var responseSkillStateModel = new SkillStateModel
+        command.Client.Character.ChangeSkillState(command.Input);
+        
+        var responseModel = new SkillStateModel()
         {
             CharacterId = command.Client.Character.Id,
-            TargetCharacterId = command.Client.Character.Target.Id,
+            TargetCharacterId = command.Client.Character.CurrentCastingTarget?.Id,
             SkillState = command.Input.SkillState
         };
-        _server.PushGameQueues(responseSkillStateModel, x => x.Character?.Id != command.Client.Character.Id);
-
-        if (castSkill != null && castSkill.HealthChange(out var result))
-        {
-            var responseCharacterHealth = new CharacterHealth
-            {
-                CharacterId = result.CharacterId,
-                Health = result.Health
-            };
-            _server.PushGameQueues(responseCharacterHealth);
-        }
-
+        
+        _server.PushGameQueues(responseModel, x => x.Character?.Id != command.Client.Character.Id);
+        
         return Task.CompletedTask;
     }
 }

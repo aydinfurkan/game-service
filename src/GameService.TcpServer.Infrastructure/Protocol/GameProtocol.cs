@@ -55,7 +55,7 @@ public class GameProtocol : WebSocketProtocol, IProtocol
                 145 => JsonConvert.DeserializeObject<CommandBase<ChangeQuaternionCommand>>(str)?.Data,
                 160 => JsonConvert.DeserializeObject<CommandBase<ChangeMoveStateCommand>>(str)?.Data,
                 161 => JsonConvert.DeserializeObject<CommandBase<ChangeJumpStateCommand>>(str)?.Data,
-                162 => JsonConvert.DeserializeObject<CommandBase<CastSkillCommand>>(str)?.Data,
+                162 => JsonConvert.DeserializeObject<CommandBase<ChangeSkillStateCommand>>(str)?.Data,
                 176 => JsonConvert.DeserializeObject<CommandBase<SelectCharacterCommand>>(str)?.Data,
                 _ => null
             };
