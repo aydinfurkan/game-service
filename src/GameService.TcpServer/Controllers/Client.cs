@@ -16,6 +16,8 @@ public class Client
     public CancellationTokenSource CancellationTokenSource { get; }
     public int CorrelationId { get; }
 
+    public bool IsActive { get; private set; } = true;
+
     public Client(TcpClient tcpClient)
     {
         TcpClient = tcpClient;
@@ -33,5 +35,13 @@ public class Client
     public void SetCharacter(Character character)
     {
         Character = character;
+    }
+
+    public void Close()
+    {
+        GameQueue.CompleteAdding();
+        CancellationTokenSource.Cancel();
+        TcpClient.Close();
+        IsActive = false;
     }
 }

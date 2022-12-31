@@ -43,7 +43,6 @@ public class UserAntiCorruption : IUserAntiCorruption
     }
     public async Task<UserDto> ReplaceCharacterAsync(Character character)
     {
-            
         _httpClient.DefaultRequestHeaders.Authorization = 
             new AuthenticationHeaderValue(
                 "Basic", Convert.ToBase64String(

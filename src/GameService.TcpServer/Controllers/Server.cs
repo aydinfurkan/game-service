@@ -42,9 +42,7 @@ public class Server
     public void CloseClient(Client client)
     {
         _gameClientList.Remove(client);
-        client.GameQueue.CompleteAdding();
-        client.CancellationTokenSource.Cancel();
-        client.TcpClient.Close();
+        client.Close();
     }
     public bool Write<T>(TcpClient tcpClient, T obj) where T : ResponseModelData
     {
@@ -66,7 +64,7 @@ public class Server
             
         var stopwatch = new Stopwatch();
         stopwatch.Start();
-        while (gameClient != null && gameClient.TcpClient.Connected)
+        while (gameClient is { IsActive: true })
         {
             if (stopwatch.ElapsedMilliseconds > 5000)
             {

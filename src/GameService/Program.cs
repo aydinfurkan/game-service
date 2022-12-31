@@ -1,6 +1,5 @@
 ﻿using GameService;
 using GameService.Anticorruption.Extensions;
-using GameService.Application.Commands;
 using GameService.Controllers;
 using GameService.Infrastructure.Extensions;
 using GameService.TcpServer.Abstractions;
@@ -16,7 +15,7 @@ builder.ConfigureServices((hostContext, services) =>
     {
         services
             .AddSingleton<ICharacterController, CharacterController>()
-            .AddMediatR(typeof(ClientCommand)) // This is for adding handlers 
+            .AddMediatR(AppDomain.CurrentDomain.Load("GameService.Application")) // This is for adding handlers 
             .AddInfrastructure()
             .AddAnticorruption(hostContext.Configuration)
             .AddTcpServer()
