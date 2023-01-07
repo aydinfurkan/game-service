@@ -7,9 +7,9 @@ namespace GameService.TcpServer.Abstractions;
 
 public interface ICharacterController
 {
-    Task Send<T>(Game game, Client client, T receivedData) where T : CommandBaseData;
+    Task SendAsync<T>(Game game, Client client, T receivedData) where T : CommandBaseData;
 
-    Task Tick(Game game, Client client, ElapsedEventArgs elapsedEventArgs);
+    Task TickAsync(Game game, Client client, ElapsedEventArgs elapsedEventArgs);
 
-    Task Disconnect(Game game, Client client);
+    Task DisconnectAsync(Game game, Client client);
 }

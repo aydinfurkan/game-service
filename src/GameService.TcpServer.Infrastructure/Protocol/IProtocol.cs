@@ -6,7 +6,7 @@ namespace GameService.TcpServer.Infrastructure.Protocol;
 
 public interface IProtocol
 {
-    public bool Write<T>(TcpClient client, T obj) where T : ResponseModelData;
-    public CommandBaseData? Read(TcpClient client);
-    public void HandShake(TcpClient client);
+    public Task WriteAsync<T>(TcpClient client, T obj) where T : ResponseModelData;
+    public Task<CommandBaseData?> ReadAsync(TcpClient client);
+    public Task HandShakeAsync(TcpClient client);
 }

@@ -7,25 +7,34 @@ using GameService.TcpServer.Extensions;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 
 IHostBuilder builder = Host.CreateDefaultBuilder(args);
 
 builder.ConfigureServices((hostContext, services) =>
     {
-        services
-            .AddSingleton<ICharacterController, CharacterController>()
+        var serviceProvider = services.BuildServiceProvider();
+        
+        services.AddSingleton<ICharacterController, CharacterController>()
             .AddMediatR(AppDomain.CurrentDomain.Load("GameService.Application")) // This is for adding handlers 
-            .AddInfrastructure()
+            .AddInfrastructure(serviceProvider)
             .AddAnticorruption(hostContext.Configuration)
             .AddTcpServer()
             .AddHostedService<Worker>();
     })
     .ConfigureLogging(configLogging =>
     {
-        //configLogging.ClearProviders();
+        configLogging.ClearProviders();
+        configLogging.AddConsole();
         configLogging.AddNLog();
         
+        configLogging.AddSimpleConsole(options =>
+        {
+            options.IncludeScopes = true;
+            options.SingleLine = true;
+            options.TimestampFormat = "HH:mm:ss ";
+        });
     });
 
 IHost app = builder.Build();

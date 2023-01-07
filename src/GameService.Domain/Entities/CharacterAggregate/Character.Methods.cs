@@ -1,4 +1,3 @@
-using GameService.Common.Enums;
 using GameService.Contract.Commands;
 using GameService.Contract.CommonModels;
 using GameService.Domain.Skills;

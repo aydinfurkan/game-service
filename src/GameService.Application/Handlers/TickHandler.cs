@@ -10,8 +10,7 @@ public class TickHandler: AsyncRequestHandler<ClientInputCommand<ElapsedEventArg
 {
     private readonly Server _server;
     
-    public TickHandler(
-        Server server)
+    public TickHandler(Server server)
     {
         _server = server;
     }

@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using GameService.Anticorruption.UserService.Models.Response;
-using GameService.Domain.Entities;
 using GameService.Domain.Entities.CharacterAggregate;
 
 namespace GameService.Anticorruption.UserService;

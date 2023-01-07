@@ -32,7 +32,7 @@ public class ChangeSkillStateCommandHandler: AsyncRequestHandler<ClientInputComm
             SkillState = command.Input.SkillState
         };
         
-        _server.PushGameQueues(responseModel, x => x.Character?.Id != command.Client.Character.Id);
+        _server.PushGameQueues(responseModel, x => x.Value.Character?.Id != command.Client.Character.Id);
         
         return Task.CompletedTask;
     }

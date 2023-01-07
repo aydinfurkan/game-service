@@ -39,6 +39,6 @@ public class DisconnectHandler: AsyncRequestHandler<ClientCommand>
             CharacterId = character.Id
         };
         
-        _server.PushGameQueues(deleteCharacterResponseModel, x => x.Character.Id != command.Client.Character.Id);
+        _server.PushGameQueues(deleteCharacterResponseModel, x => x.Value.Character?.Id != command.Client.Character?.Id);
     }
 }

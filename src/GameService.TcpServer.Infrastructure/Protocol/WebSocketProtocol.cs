@@ -7,7 +7,7 @@ namespace GameService.TcpServer.Infrastructure.Protocol;
 
 public abstract class WebSocketProtocol  // https://datatracker.ietf.org/doc/html/rfc6455#section-5.1
 {
-    protected bool Write(TcpClient client, string str) // TODO make longer than 125
+    protected async Task WriteAsync(TcpClient client, string str) // TODO make longer than 125
     {
         var stream = client.GetStream();
         var totalBytes = Encoding.UTF8.GetBytes(str);
@@ -50,16 +50,15 @@ public abstract class WebSocketProtocol  // https://datatracker.ietf.org/doc/htm
         }
 
         var data = byteList.SelectMany(x => x).ToArray();
-        stream.Write(data);
-        return true;
+        await stream.WriteAsync(data);
     }
 
-    protected string Read(TcpClient client)
+    protected async Task<string> ReadAsync(TcpClient client)
     {
         var stream = client.GetStream();
             
         var bytes = new byte[client.ReceiveBufferSize];
-        stream.Read(bytes);
+        var numberOfBytes = await stream.ReadAsync(bytes);
             
         var fin = GetBit(bytes, 1);
         var mask = GetBit(bytes, 9);
@@ -100,7 +99,7 @@ public abstract class WebSocketProtocol  // https://datatracker.ietf.org/doc/htm
         return input;
     }
 
-    protected void HandShake(TcpClient client)
+    protected async Task HandShakeAsync(TcpClient client)
     {
         var stopwatch = new Stopwatch();
         stopwatch.Start();
@@ -125,7 +124,7 @@ public abstract class WebSocketProtocol  // https://datatracker.ietf.org/doc/htm
             "Upgrade: websocket" + eol +
             "Sec-WebSocket-Accept: " + swkSha1Base64 + eol + eol);
 
-        client.GetStream().Write(response);
+        await client.GetStream().WriteAsync(response);
     }
         
     private int GetHeader(bool finalFrame, bool contFrame)

@@ -9,7 +9,7 @@ namespace GameService.TcpServer.Infrastructure.Protocol;
 
 public class GameProtocol : WebSocketProtocol, IProtocol
 {
-    public bool Write<T>(TcpClient client, T obj) where T : ResponseModelData
+    public async Task WriteAsync<T>(TcpClient client, T obj) where T : ResponseModelData
     {
         var type = obj switch
         {
@@ -36,12 +36,12 @@ public class GameProtocol : WebSocketProtocol, IProtocol
         };
         jsonSetting.Converters.Add(new DoubleFormatConverter());
         var str = JsonConvert.SerializeObject(responseModel, jsonSetting);
-        return base.Write(client, str);
+        await base.WriteAsync(client, str);
     }
         
-    public CommandBaseData? Read(TcpClient client)
+    public async Task<CommandBaseData?> ReadAsync(TcpClient client)
     {
-        var str= base.Read(client);
+        var str= await base.ReadAsync(client);
         var definition = new { Type = 0 };
         
         try
@@ -67,9 +67,9 @@ public class GameProtocol : WebSocketProtocol, IProtocol
             return null;
         }
     }
-        
-    public new void HandShake(TcpClient client)
+
+    public async Task HandShakeAsync(TcpClient client)
     {
-        base.HandShake(client);
+        await base.HandShakeAsync(client);
     }
 }

@@ -1,5 +1,3 @@
-using GameService.Domain.Skills;
-
 namespace GameService.Domain.Entities.CharacterAggregate;
 
 public class ActiveEffect

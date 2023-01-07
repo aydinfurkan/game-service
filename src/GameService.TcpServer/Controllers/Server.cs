@@ -1,81 +1,81 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Concurrent;
 using System.Net.Sockets;
-using GameService.Contract.Commands;
+using AsyncAwaitBestPractices;
 using GameService.Contract.ResponseModels;
 using GameService.Domain.Entities;
-using GameService.Infrastructure.Logger;
 using GameService.TcpServer.Infrastructure.Protocol;
+using Microsoft.Extensions.Logging;
 
 namespace GameService.TcpServer.Controllers;
 
 public class Server
 {
-    private readonly IPLogger<Server> _logger;
+    private readonly ILogger<Server> _logger;
     private readonly TcpListener _listener;
     private readonly IProtocol _protocol;
-    private readonly List<Client> _gameClientList;
+    private readonly ConcurrentDictionary<Guid, Client> _gameClientList;
+    private readonly IServiceProvider _serviceProvider;
+    
 
-    public Server(IPLogger<Server> logger, TcpListener tcpListener, IProtocol protocol)
+    public Server(ILogger<Server> logger, TcpListener tcpListener, IProtocol protocol, IServiceProvider serviceProvider)
     {
         _logger = logger;
         _listener = tcpListener;
         _protocol = protocol;
-        _gameClientList = new List<Client>();
+        _serviceProvider = serviceProvider;
+        _gameClientList = new ConcurrentDictionary<Guid, Client>();
     }
-        
-    public void Start()
+    
+    public async Task InitAsync(Func<Client, Task> onClientAcceptedAsync, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("TcpServer started.");
         _listener.Start();
-    }
-    public void Stop()
-    {
-        _listener.Stop();
-    }
-    public async Task<TcpClient> AcceptClientAsync()
-    {
-        return await _listener.AcceptTcpClientAsync();
-    }
-    public void AddClient(Client client)
-    {
-        _gameClientList.Add(client);
-    }
-    public void CloseClient(Client client)
-    {
-        _gameClientList.Remove(client);
-        client.Close();
-    }
-    public bool Write<T>(TcpClient tcpClient, T obj) where T : ResponseModelData
-    {
-        return _protocol.Write(tcpClient, obj);
-    }
-    public CommandBaseData? Read(TcpClient tcpClient)
-    {
-        return _protocol.Read(tcpClient);
-    }
         
-    public void PushGameQueues(ResponseModelData response, Func<Client,bool>? expression = null)
-    {
-        _gameClientList.Where(expression ?? (_ => true)).ToList().ForEach(x => x.GameQueue.Add(response));
+        await StartAcceptClientAsync(onClientAcceptedAsync, cancellationToken);
+        
+        _listener.Stop();
+        _logger.LogInformation("TcpServer stopped.");
     }
-    public void CancelFormerConnection(User user)
+    
+    private async Task StartAcceptClientAsync(Func<Client, Task> onClientAcceptedAsync, CancellationToken cancellationToken)
     {
-        var gameClient = _gameClientList.FirstOrDefault(x => x.User.Id == user.Id);
-        gameClient?.CancellationTokenSource.Cancel();
-            
-        var stopwatch = new Stopwatch();
-        stopwatch.Start();
-        while (gameClient is { IsActive: true })
+        while (!cancellationToken.IsCancellationRequested)
         {
-            if (stopwatch.ElapsedMilliseconds > 5000)
-            {
-                throw new Exception("Cancel former connection timeout.");
-            }
+            var tcpClient = await _listener.AcceptTcpClientAsync(cancellationToken);
+
+            onClientAcceptedAsync(new Client(tcpClient, _serviceProvider)).SafeFireAndForget();
         }
     }
 
-    public void OpenNewConnection(TcpClient tcpClient)
+    public bool AddClient(Client client)
     {
-        _protocol.HandShake(tcpClient);
+        return _gameClientList.TryAdd(client.Id, client);
     }
+    
+    public void CloseClient(Client client)
+    {
+        client.Close();
+        while (!_gameClientList.TryRemove(client.Id, out _)){}
+    }
+    
+    public void PushGameQueues(ResponseModelData response, Func<KeyValuePair<Guid, Client>,bool>? expression = null)
+    {
+        _gameClientList.Where(expression ?? (_ => true)).ToList().ForEach(x => x.Value.WriteAsync(response).SafeFireAndForget());
+    }
+    
+    public void CancelFormerConnection(User user)
+    {
+        var gameClient = _gameClientList.FirstOrDefault(x => x.Value.User?.Id == user.Id);
+        gameClient.Value.CancellationTokenSource.Cancel();
 
+        // var stopwatch = new Stopwatch();
+        // stopwatch.Start();
+        // while (gameClient is { IsActive: true })
+        // {
+        //     if (stopwatch.ElapsedMilliseconds > 5000)
+        //     {
+        //         throw new Exception("Cancel former connection timeout.");
+        //     }
+        // }
+    }
 }

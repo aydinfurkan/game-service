@@ -8,6 +8,7 @@ public class Game
 {
     private Guid _id;
     private readonly ActiveCharacters _activeCharacters;
+    
     public Game()
     {
         _id = Guid.NewGuid();
