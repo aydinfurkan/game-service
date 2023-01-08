@@ -1,9 +1,10 @@
-using GameService.Anticorruption.UserService;
+using GameService.Anticorruption.UserService.UserService;
 using GameService.Application.Commands;
 using GameService.Contract.Commands;
 using GameService.Contract.ResponseModels;
-using GameService.TcpServer.Controllers;
+using GameService.TcpServer.Entities;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace GameService.Application.Handlers;
 
@@ -11,21 +12,33 @@ public class VerificationCommandHandler: AsyncRequestHandler<ClientInputCommand<
 {
     private readonly Server _server;
     private readonly IUserAntiCorruption _userAntiCorruption;
+    private readonly ILogger<VerificationCommandHandler> _logger;
     
     public VerificationCommandHandler(
         IUserAntiCorruption userAntiCorruption, 
-        Server server)
+        Server server, 
+        ILogger<VerificationCommandHandler> logger)
     {
         _userAntiCorruption = userAntiCorruption;
         _server = server;
+        _logger = logger;
     }
     
     protected override async Task Handle(ClientInputCommand<VerificationCommand> command, CancellationToken cancellationToken)
     {
         var input = command.Input;
         var client = command.Client;
+
+        var userDto = await _userAntiCorruption.VerifyUserAsync(input.PToken);
+
+        if (userDto == null)
+        {
+            command.Client.Close();
+            return;
+        }
+
+        var user = userDto.ToModel();
         
-        var user = (await _userAntiCorruption.VerifyUserAsync(input.PToken)).ToModel();
         _server.CancelFormerConnection(user);
         
         var character = user.CharacterList.FirstOrDefault(x => x.Id == input.CharacterId);

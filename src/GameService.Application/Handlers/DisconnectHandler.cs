@@ -1,7 +1,8 @@
 using GameService.Anticorruption.UserService;
+using GameService.Anticorruption.UserService.UserService;
 using GameService.Application.Commands;
 using GameService.Contract.ResponseModels;
-using GameService.TcpServer.Controllers;
+using GameService.TcpServer.Entities;
 using MediatR;
 
 namespace GameService.Application.Handlers;

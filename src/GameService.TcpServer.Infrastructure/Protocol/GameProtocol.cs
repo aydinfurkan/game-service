@@ -9,7 +9,7 @@ namespace GameService.TcpServer.Infrastructure.Protocol;
 
 public class GameProtocol : WebSocketProtocol, IProtocol
 {
-    public async Task WriteAsync<T>(TcpClient client, T obj) where T : ResponseModelData
+    public async Task WriteAsync<T>(TcpClient tcpClient, T obj) where T : ResponseModelData
     {
         var type = obj switch
         {
@@ -17,15 +17,16 @@ public class GameProtocol : WebSocketProtocol, IProtocol
             ActiveCharacters => 1,
             AddCharacter => 2,
             DeleteCharacter => 3,
-            Contract.ResponseModels.PositionModel => 16,
-            Contract.ResponseModels.QuaternionModel => 17,
-            Contract.ResponseModels.MoveStateModel => 32,
-            Contract.ResponseModels.JumpStateModel => 33,
-            Contract.ResponseModels.SkillStateModel => 34,
+            PositionModel => 16,
+            QuaternionModel => 17,
+            MoveStateModel => 32,
+            JumpStateModel => 33,
+            SkillStateModel => 34,
             CharacterHealth => 48,
             CharacterMana => 49,
             CharacterStats => 50,
             CharacterLevel => 51,
+            PingModel => 99,
             _ => 3131
         };
         var responseModel = new ResponseModelBase<T>(type, obj);
@@ -35,13 +36,14 @@ public class GameProtocol : WebSocketProtocol, IProtocol
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
         jsonSetting.Converters.Add(new DoubleFormatConverter());
+        jsonSetting.Converters.Add(new DateFormatConverter());
         var str = JsonConvert.SerializeObject(responseModel, jsonSetting);
-        await base.WriteAsync(client, str);
+        await base.WriteAsync(tcpClient, str);
     }
         
-    public async Task<CommandBaseData?> ReadAsync(TcpClient client)
+    public async Task<CommandBaseData?> ReadAsync(TcpClient tcpClient, CancellationToken cancellationToken)
     {
-        var str= await base.ReadAsync(client);
+        var str= await base.ReadAsync(tcpClient, cancellationToken);
         var definition = new { Type = 0 };
         
         try

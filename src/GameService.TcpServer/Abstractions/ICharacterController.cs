@@ -1,7 +1,7 @@
 using System.Timers;
 using GameService.Contract.Commands;
 using GameService.Domain.Entities;
-using GameService.TcpServer.Controllers;
+using GameService.TcpServer.Entities;
 
 namespace GameService.TcpServer.Abstractions;
 

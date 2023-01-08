@@ -53,12 +53,12 @@ public abstract class WebSocketProtocol  // https://datatracker.ietf.org/doc/htm
         await stream.WriteAsync(data);
     }
 
-    protected async Task<string> ReadAsync(TcpClient client)
+    protected async Task<string> ReadAsync(TcpClient client, CancellationToken cancellationToken)
     {
         var stream = client.GetStream();
             
         var bytes = new byte[client.ReceiveBufferSize];
-        var numberOfBytes = await stream.ReadAsync(bytes);
+        var numberOfBytes = await stream.ReadAsync(bytes, cancellationToken);
             
         var fin = GetBit(bytes, 1);
         var mask = GetBit(bytes, 9);

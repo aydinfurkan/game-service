@@ -1,4 +1,4 @@
-using GameService.TcpServer.Controllers;
+using GameService.TcpServer.Entities;
 using GameService.TcpServer.Infrastructure.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,7 +10,7 @@ public static class TcpServerServiceCollectionExtension
     {
         services.AddTcpServerInfrastructure()
             .AddSingleton<Server>()
-            .AddSingleton<ServerController>();
+            .AddScoped<Client>();
         return services;
     }
 }

@@ -3,7 +3,7 @@ using GameService.Application.Commands;
 using GameService.Contract.Commands;
 using GameService.Domain.Entities;
 using GameService.TcpServer.Abstractions;
-using GameService.TcpServer.Controllers;
+using GameService.TcpServer.Entities;
 using MediatR;
 
 namespace GameService.Controllers;

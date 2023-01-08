@@ -1,6 +1,6 @@
 using GameService.Application.Commands;
 using GameService.Contract.Commands;
-using GameService.TcpServer.Controllers;
+using GameService.TcpServer.Entities;
 using MediatR;
 
 namespace GameService.Application.Handlers;

@@ -8,7 +8,7 @@ public static class InfrastructureModule
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IServiceProvider serviceProvider)
     {
-        services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
+        services.AddScoped(typeof(ILogger<>), typeof(Logger<>));
         SafeFireAndForgetSettings.Initialize(serviceProvider.GetRequiredService<ILogger<SafeFireAndForgetSettings>>());
         return services;
     }

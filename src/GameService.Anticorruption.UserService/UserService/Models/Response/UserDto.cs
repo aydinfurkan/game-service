@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using GameService.Domain.Entities;
+﻿using GameService.Domain.Entities;
 
-namespace GameService.Anticorruption.UserService.Models.Response;
+namespace GameService.Anticorruption.UserService.UserService.Models.Response;
 
 public class UserDto
 {

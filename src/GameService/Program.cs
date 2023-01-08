@@ -1,5 +1,5 @@
 ﻿using GameService;
-using GameService.Anticorruption.Extensions;
+using GameService.Anticorruption.UserService.Extensions;
 using GameService.Controllers;
 using GameService.Infrastructure.Extensions;
 using GameService.TcpServer.Abstractions;

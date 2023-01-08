@@ -7,6 +7,6 @@ public class SafeFireAndForgetSettings
 {
     public static void Initialize(ILogger<SafeFireAndForgetSettings> logger)
     {
-        SafeFireAndForgetExtensions.SetDefaultExceptionHandling(ex => logger.LogError(ex, "SafeFireAndForget exception"));
+        SafeFireAndForgetExtensions.SetDefaultExceptionHandling(ex => logger.LogError("{Exception}", ex.Message));
     }
 }
