@@ -68,7 +68,7 @@ public class VerificationCommandHandler: AsyncRequestHandler<ClientInputCommand<
         
         _server.PushGameQueues(userCharacterResponseModel, x => x.Value.Character?.Id == client.Character?.Id);
 
-        var activeCharacters = command.Game.GetAllActiveCharacters().Select(x => x.ToCharacter()).ToList(); 
+        var activeCharacters = command.Game.GetAllActiveCharacters().Where(x => x.Id != client.Character?.Id).Select(x => x.ToCharacter()).ToList(); 
         var activeCharactersResponseModel = new ActiveCharacters
         {
             Characters = activeCharacters
