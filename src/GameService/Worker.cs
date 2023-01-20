@@ -1,7 +1,7 @@
 using System.Net.Sockets;
 using AsyncAwaitBestPractices;
+using GameService.Common.Logger;
 using GameService.Domain.Entities;
-using GameService.Infrastructure.Logger;
 using GameService.TcpServer.Abstractions;
 using GameService.TcpServer.Entities;
 using GameService.TcpServer.Infrastructure.Protocol;

@@ -41,7 +41,7 @@ public class GameProtocol : WebSocketProtocol, IProtocol
         await base.WriteAsync(tcpClient, str);
     }
         
-    public async Task<CommandBaseData?> ReadAsync(TcpClient tcpClient, CancellationToken cancellationToken)
+    public new async Task<CommandBaseData?> ReadAsync(TcpClient tcpClient, CancellationToken cancellationToken)
     {
         var str= await base.ReadAsync(tcpClient, cancellationToken);
         var definition = new { Type = 0 };
@@ -59,6 +59,8 @@ public class GameProtocol : WebSocketProtocol, IProtocol
                 161 => JsonConvert.DeserializeObject<CommandBase<ChangeJumpStateCommand>>(str)?.Data,
                 162 => JsonConvert.DeserializeObject<CommandBase<ChangeSkillStateCommand>>(str)?.Data,
                 176 => JsonConvert.DeserializeObject<CommandBase<SelectCharacterCommand>>(str)?.Data,
+                209 => JsonConvert.DeserializeObject<CommandBase<CastSkillCommand>>(str)?.Data,
+                210 => JsonConvert.DeserializeObject<CommandBase<ExecuteSkillEffectCommand>>(str)?.Data,
                 _ => null
             };
             
@@ -70,7 +72,7 @@ public class GameProtocol : WebSocketProtocol, IProtocol
         }
     }
 
-    public async Task HandShakeAsync(TcpClient client)
+    public new async Task HandShakeAsync(TcpClient client)
     {
         await base.HandShakeAsync(client);
     }

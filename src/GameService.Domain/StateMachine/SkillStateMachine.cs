@@ -1,6 +1,8 @@
 using GameService.Common.Enums;
+using GameService.Common.Logger;
 using GameService.Contract.Commands;
 using GameService.Domain.Entities.CharacterAggregate;
+using Microsoft.Extensions.Logging;
 using Stateless;
 
 namespace GameService.Domain.StateMachine;
@@ -11,10 +13,12 @@ public class SkillStateMachine
     public SkillState CurrentSkillState = SkillState.Ready;
     private LearnedSkill? _currentLearnedSkill;
     private Character? _currentTarget;
+    private readonly ILogger<SkillStateMachine> _logger;
     
     public SkillStateMachine()
     {
         _machine = new StateMachine<SkillState, string>(() => CurrentSkillState, c => CurrentSkillState = c);
+        _logger = ApplicationLogging.CreateLogger<SkillStateMachine>();
         Configure();
     }
 
@@ -39,7 +43,15 @@ public class SkillStateMachine
     {
         _currentLearnedSkill = learnedSkill;
         _currentTarget = target;
-        this._machine.Fire(command.Name);
+
+        try
+        {
+            this._machine.Fire(command.Name);
+        }
+        catch (Exception e)
+        {
+            _logger.LogDebug("{Exception}", e.Message);
+        }
     }
     
     private bool CanBeCasting()

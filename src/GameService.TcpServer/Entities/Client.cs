@@ -107,6 +107,10 @@ public class Client
         _timers.Add(pingTimer);
         pingTimer.Elapsed += (_, e) =>
         {
+            if (this.Character == null)
+            {
+                return;
+            }
             var pingModel = new PingModel
             {
                 SentAt = DateTime.UtcNow

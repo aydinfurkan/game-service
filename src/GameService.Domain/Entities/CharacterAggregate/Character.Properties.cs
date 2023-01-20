@@ -21,7 +21,7 @@ public partial class Character
         
     public Character? Target;
     public List<LearnedSkill> LearnedSkills;
-    public List<ActiveEffect> ActiveEffects;
+    // public List<ActiveEffect> ActiveEffects;
     public LearnedSkill? CurrentCastingSkill = null;
     public Character? CurrentCastingTarget = null;
 

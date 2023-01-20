@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-namespace GameService.Infrastructure.Logger;
+namespace GameService.Common.Logger;
 
 public static class ApplicationLogging
 {
