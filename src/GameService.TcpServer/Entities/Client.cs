@@ -58,6 +58,8 @@ public class Client
     
     public async Task<CommandBaseData?> ReadAsync()
     {
+        CancellationTokenSource.TryReset();
+        CancellationTokenSource.CancelAfter(3000);
         return await _protocol.ReadAsync(TcpClient, CancellationTokenSource.Token);
     }
     
