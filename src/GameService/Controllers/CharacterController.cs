@@ -1,10 +1,9 @@
 using System.Timers;
 using GameService.Application.Commands;
 using GameService.Contract.Commands;
-using GameService.Contract.ResponseModels;
 using GameService.Domain.Entities;
 using GameService.TcpServer.Abstractions;
-using GameService.TcpServer.Controllers;
+using GameService.TcpServer.Entities;
 using MediatR;
 
 namespace GameService.Controllers;
@@ -18,7 +17,7 @@ public class CharacterController: ICharacterController
         _mediator = mediator;
     }
 
-    public async Task Send<T>(Game game, Client client, T receivedData) where T : CommandBaseData
+    public async Task SendAsync<T>(Game game, Client client, T receivedData) where T : CommandBaseData
     {
         switch (receivedData)
         {
@@ -78,13 +77,13 @@ public class CharacterController: ICharacterController
             }
         }
     }
-    public async Task Tick(Game game, Client client, ElapsedEventArgs elapsedEventArgs)
+    public async Task TickAsync(Game game, Client client, ElapsedEventArgs elapsedEventArgs)
     {
         var command = new ClientInputCommand<ElapsedEventArgs>(game, client, elapsedEventArgs);
         await _mediator.Send(command);
     }
     
-    public async Task Disconnect(Game game, Client client)
+    public async Task DisconnectAsync(Game game, Client client)
     {
         var command = new ClientCommand(game, client);
         await _mediator.Send(command);

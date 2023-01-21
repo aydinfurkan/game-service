@@ -8,4 +8,6 @@ public class CastSkillCommand : CommandBaseData
 public class ExecuteSkillEffectCommand : CommandBaseData
 {
     public int SkillId { get; set; }
+    
+    public List<Guid>? CharacterIdList { get; set; }
 }

@@ -1,6 +1,8 @@
 using GameService.Common.Enums;
+using GameService.Common.Logger;
 using GameService.Contract.Commands;
 using GameService.Domain.Entities.CharacterAggregate;
+using Microsoft.Extensions.Logging;
 using Stateless;
 
 namespace GameService.Domain.StateMachine;
@@ -10,10 +12,12 @@ public class CharacterStateMachine
     private readonly StateMachine<CharacterState, string> _machine;
     public CharacterState CurrentCharacterState = CharacterState.Idle;
     private int? _currentSkillState;
+    private readonly ILogger<CharacterStateMachine> _logger;
     
     public CharacterStateMachine()
     {
         _machine = new StateMachine<CharacterState, string>(() => CurrentCharacterState, c => CurrentCharacterState = c);
+        _logger = ApplicationLogging.CreateLogger<CharacterStateMachine>();
         Configure();
     }
 
@@ -50,13 +54,27 @@ public class CharacterStateMachine
 
     public void Fire(CommandBaseData command)
     {
-        this._machine.Fire(command.Name);
+        try
+        {
+            this._machine.Fire(command.Name);
+        }
+        catch (Exception e)
+        {
+            _logger.LogDebug("{Exception}", e.Message);
+        }
     }
     
     public void Fire(CommandBaseData command, int skillState)
     {
         _currentSkillState = skillState;
-        this._machine.Fire(command.Name);
+        try
+        {
+            this._machine.Fire(command.Name);
+        }
+        catch (Exception e)
+        {
+            _logger.LogDebug("{Exception}", e.Message);
+        }
     }
     
     private bool IsSkillCastTimeExist()

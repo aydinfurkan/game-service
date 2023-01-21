@@ -1,5 +1,5 @@
 using GameService.Domain.Entities;
-using GameService.TcpServer.Controllers;
+using GameService.TcpServer.Entities;
 using MediatR;
 
 namespace GameService.Application.Commands;

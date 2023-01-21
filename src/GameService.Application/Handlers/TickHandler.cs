@@ -1,7 +1,7 @@
 using System.Timers;
 using GameService.Application.Commands;
 using GameService.Contract.ResponseModels;
-using GameService.TcpServer.Controllers;
+using GameService.TcpServer.Entities;
 using MediatR;
 
 namespace GameService.Application.Handlers;
@@ -10,8 +10,7 @@ public class TickHandler: AsyncRequestHandler<ClientInputCommand<ElapsedEventArg
 {
     private readonly Server _server;
     
-    public TickHandler(
-        Server server)
+    public TickHandler(Server server)
     {
         _server = server;
     }

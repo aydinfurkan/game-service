@@ -1,17 +1,13 @@
-﻿using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using System.Text;
-using System.Threading.Tasks;
-using GameService.Anticorruption.Configs;
-using GameService.Anticorruption.UserService.Models.Request;
-using GameService.Anticorruption.UserService.Models.Response;
-using GameService.Domain.Entities;
+using GameService.Anticorruption.UserService.Configs;
+using GameService.Anticorruption.UserService.UserService.Models.Request;
+using GameService.Anticorruption.UserService.UserService.Models.Response;
 using GameService.Domain.Entities.CharacterAggregate;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
-namespace GameService.Anticorruption.UserService;
+namespace GameService.Anticorruption.UserService.UserService;
 
 public class UserAntiCorruption : IUserAntiCorruption
 {
@@ -29,7 +25,7 @@ public class UserAntiCorruption : IUserAntiCorruption
             _userServiceSettings.Url.Port).Uri;
     }
         
-    public async Task<UserDto> VerifyUserAsync(string pToken)
+    public async Task<UserDto?> VerifyUserAsync(string pToken)
     {
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", pToken);
             
@@ -37,13 +33,12 @@ public class UserAntiCorruption : IUserAntiCorruption
             
         var data = await response.Content.ReadAsStringAsync();
 
-        var user = JsonConvert.DeserializeObject<UserDto>(data);
+        var user = JsonConvert.DeserializeObject<UserDto?>(data);
 
         return user;
     }
     public async Task<UserDto> ReplaceCharacterAsync(Character character)
     {
-            
         _httpClient.DefaultRequestHeaders.Authorization = 
             new AuthenticationHeaderValue(
                 "Basic", Convert.ToBase64String(

@@ -1,4 +1,3 @@
-using GameService.Common.Enums;
 using GameService.Contract.Commands;
 using GameService.Contract.CommonModels;
 using GameService.Domain.Skills;
@@ -69,10 +68,12 @@ public partial class Character
     
     public void ChangeSkillState(ChangeSkillStateCommand command)
     {
+        CurrentCastingTarget = Target;
+        CurrentCastingSkill = LearnedSkills.FirstOrDefault(x => x.Skill.Code == command.SkillState);
+        
         CharacterStateMachine.Fire(command);
         SkillStateMachine.Fire(command, CurrentCastingSkill, CurrentCastingTarget);
         
-        CurrentCastingSkill = LearnedSkills.FirstOrDefault(x => x.Skill.Code == command.SkillState);
         CurrentCastingSkill?.StartCast();
         
         SkillState = command.SkillState;

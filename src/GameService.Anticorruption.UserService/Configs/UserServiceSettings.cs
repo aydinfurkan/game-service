@@ -1,4 +1,4 @@
-namespace GameService.Anticorruption.Configs;
+namespace GameService.Anticorruption.UserService.Configs;
 
 public class UserServiceSettings
 {

@@ -11,4 +11,9 @@
       <ProjectReference Include="..\GameService.TcpServer.Infrastructure\GameService.TcpServer.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="AsyncAwaitBestPractices" Version="6.0.6" />
+      <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+    </ItemGroup>
+
 </Project>

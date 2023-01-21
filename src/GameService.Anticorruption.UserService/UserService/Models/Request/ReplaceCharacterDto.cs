@@ -1,7 +1,6 @@
-using System;
 using GameService.Common.ValueObjects;
 
-namespace GameService.Anticorruption.UserService.Models.Request;
+namespace GameService.Anticorruption.UserService.UserService.Models.Request;
 
 public class ReplaceCharacterDto
 {

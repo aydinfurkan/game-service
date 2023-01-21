@@ -1,10 +1,9 @@
-using System.Net.Http;
-using GameService.Anticorruption.Configs;
-using GameService.Anticorruption.UserService;
+using GameService.Anticorruption.UserService.Configs;
+using GameService.Anticorruption.UserService.UserService;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace GameService.Anticorruption.Extensions;
+namespace GameService.Anticorruption.UserService.Extensions;
 
 public static class AnticorruptionModule
 {

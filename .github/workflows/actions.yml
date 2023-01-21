@@ -34,16 +34,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2 
       
-      - name: Deploy in EC2
+      - name: Deploy in VM
         env:
-            RSA_PRIVATE_KEY: ${{ secrets.AWS_RSA_PRIVATE_KEY  }}
-            ACCESS_KEY_ID : ${{ secrets.AWS_ACCESS_KEY_ID  }}
+            SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY  }}
+            ACCESS_KEY_ID : ${{ secrets.ACCESS_KEY_ID  }}
 
         run: |
-          echo "$RSA_PRIVATE_KEY" > private_key && chmod 600 private_key
+          echo "$SSH_PRIVATE_KEY" > private_key && chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key $ACCESS_KEY_ID '
 
-            #Now we have got the access of EC2 and we will start the deploy .
+            #Now we have got the access of VM and we will start the deploy .
             echo "'$CR_PAT'" | sudo docker login "'$CI_REGISTRY'" -u ${{ github.repository_owner }} --password-stdin
             sudo docker rm -vf "'$DOCKER_TAG'"
             sudo docker image prune -af
