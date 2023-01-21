@@ -26,7 +26,7 @@ public class GameProtocol : WebSocketProtocol, IProtocol
             CharacterMana => 49,
             CharacterStats => 50,
             CharacterLevel => 51,
-            PingModel => 99,
+            PongModel => 127,
             _ => 3131
         };
         var responseModel = new ResponseModelBase<T>(type, obj);
@@ -61,6 +61,7 @@ public class GameProtocol : WebSocketProtocol, IProtocol
                 176 => JsonConvert.DeserializeObject<CommandBase<SelectCharacterCommand>>(str)?.Data,
                 209 => JsonConvert.DeserializeObject<CommandBase<CastSkillCommand>>(str)?.Data,
                 210 => JsonConvert.DeserializeObject<CommandBase<ExecuteSkillEffectCommand>>(str)?.Data,
+                255 => JsonConvert.DeserializeObject<CommandBase<PingCommand>>(str)?.Data,
                 _ => null
             };
             

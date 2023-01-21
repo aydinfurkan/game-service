@@ -75,6 +75,12 @@ public class CharacterController: ICharacterController
                 await _mediator.Send(command);
                 return;
             }
+            case PingCommand m:
+            {
+                var command = new ClientInputCommand<PingCommand>(game, client, m);
+                await _mediator.Send(command);
+                return;
+            }
         }
     }
     public async Task TickAsync(Game game, Client client, ElapsedEventArgs elapsedEventArgs)

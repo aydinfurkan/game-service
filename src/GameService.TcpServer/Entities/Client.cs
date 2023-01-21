@@ -73,7 +73,7 @@ public class Client
     public async Task StartAsync(Game game)
     {
         StartTick(game);
-        StartPing();
+        // StartPing();
         await SubscribeAsync(game);
     }
 
@@ -102,24 +102,24 @@ public class Client
             _characterController.TickAsync(game, this, e).SafeFireAndForget();
         };
     }
-
-    private void StartPing()
-    {
-        var pingTimer = new System.Timers.Timer(1000) {Enabled = true};
-        _timers.Add(pingTimer);
-        pingTimer.Elapsed += (_, e) =>
-        {
-            if (this.Character == null)
-            {
-                return;
-            }
-            var pingModel = new PingModel
-            {
-                SentAt = DateTime.UtcNow
-            };
-            WriteAsync(pingModel).SafeFireAndForget();
-        };
-    }
+    
+    // private void StartPing()
+    // {
+    //     var pingTimer = new System.Timers.Timer(1000) {Enabled = true};
+    //     _timers.Add(pingTimer);
+    //     pingTimer.Elapsed += (_, e) =>
+    //     {
+    //         if (this.Character == null)
+    //         {
+    //             return;
+    //         }
+    //         var pingModel = new PongModel
+    //         {
+    //             PingSentTime = DateTime.UtcNow
+    //         };
+    //         WriteAsync(pingModel).SafeFireAndForget();
+    //     };
+    // }
     
     public void Close(Game game)
     {
