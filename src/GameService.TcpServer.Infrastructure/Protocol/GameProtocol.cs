@@ -36,7 +36,6 @@ public class GameProtocol : WebSocketProtocol, IProtocol
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
         jsonSetting.Converters.Add(new DoubleFormatConverter());
-        jsonSetting.Converters.Add(new DateFormatConverter());
         var str = JsonConvert.SerializeObject(responseModel, jsonSetting);
         await base.WriteAsync(tcpClient, str);
     }
