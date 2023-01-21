@@ -121,7 +121,7 @@ public class Client
         };
     }
     
-    public void Close()
+    public void Close(Game game)
     {
         _logger.LogInformation("Client disconnected");
         CancellationTokenSource.Cancel();
@@ -131,5 +131,6 @@ public class Client
             x.Stop();
             x.Dispose();
         });
+        _characterController.DisconnectAsync(game, this);
     }
 }

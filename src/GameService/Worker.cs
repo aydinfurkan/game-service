@@ -60,7 +60,7 @@ public class Worker : BackgroundService
         }
         finally
         {
-            client.Close();
+            client.Close(_game);
             _server.RemoveClient(client);
         }
     }

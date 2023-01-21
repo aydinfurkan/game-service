@@ -33,7 +33,7 @@ public class VerificationCommandHandler: AsyncRequestHandler<ClientInputCommand<
 
         if (userDto == null)
         {
-            command.Client.Close();
+            command.Client.Close(command.Game);
             return;
         }
 
