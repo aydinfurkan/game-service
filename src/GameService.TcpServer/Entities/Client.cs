@@ -37,7 +37,6 @@ public class Client
         _characterController = characterController;
         TcpClient = tcpClient;
         _logger = logger;
-        _logger.BeginScope("ClientId: {Id}",Id);
         tcpClient.NoDelay = true;
     }
 
@@ -58,8 +57,6 @@ public class Client
     
     public async Task<CommandBaseData?> ReadAsync()
     {
-        CancellationTokenSource.TryReset();
-        CancellationTokenSource.CancelAfter(10000);
         return await _protocol.ReadAsync(TcpClient, CancellationTokenSource.Token);
     }
     
@@ -82,12 +79,17 @@ public class Client
         _logger.LogInformation("Subscribe process start");
         while (!CancellationTokenSource.IsCancellationRequested)
         {
+            CancellationTokenSource.CancelAfter(10000);
             var input = await ReadAsync();
+            if (input is VerificationCommand)
+            {
+                CancellationTokenSource.TryReset();
+            }
             if (input == null)
             {
                 continue;
             }
-            _logger.LogInformation("Message received. Input: {@Input}", JsonConvert.SerializeObject(input));
+            _logger.LogDebug("Message received. Input: {@Input}", JsonConvert.SerializeObject(input));
             _characterController.SendAsync(game, this, input).SafeFireAndForget();
         }
         _logger.LogInformation("Subscribe process end");

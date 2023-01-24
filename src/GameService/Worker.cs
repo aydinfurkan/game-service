@@ -39,7 +39,7 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        this.LogThreadCountAsync(cancellationToken).SafeFireAndForget();
+        // this.LogThreadCountAsync(cancellationToken).SafeFireAndForget(); // Can be obtained by docker stats
         await _server.InitAsync(OnClientAcceptedAsync, cancellationToken);
     }
 
@@ -48,6 +48,8 @@ public class Worker : BackgroundService
         using var scope = _services.CreateScope();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<Client>>();
         var client = new Client(tcpClient, _protocol, _characterController, logger);
+        logger.BeginScope("ClientId: {Id}", client.Id);
+        logger.LogInformation("New client connected");
 
         try
         {
@@ -70,8 +72,7 @@ public class Worker : BackgroundService
         while (!cancellationToken.IsCancellationRequested)
         {
             _logger.LogInformation($"Working thread count : {System.Diagnostics.Process.GetCurrentProcess().Threads.Count}");
-            // await Task.Delay(5*60*1000, cancellationToken);
-            await Task.Delay(10*1000, cancellationToken);
+            await Task.Delay(5*60*1000, cancellationToken);
         }
     }
 }

@@ -35,7 +35,9 @@ public class Server
     {
         while (!cancellationToken.IsCancellationRequested)
         {
+            _logger.LogInformation("New client is listening");
             var tcpClient = await _listener.AcceptTcpClientAsync(cancellationToken);
+            _logger.LogInformation("New client is accepted");
             
             onClientAcceptedAsync(tcpClient).SafeFireAndForget();
         }
