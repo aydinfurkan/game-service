@@ -87,7 +87,7 @@ public class Client
             }
             if (input == null)
             {
-                continue;
+                return; // TODO client haber vermeden cikarsa diye konuldu. Bu durumu incelemek lazim
             }
             _logger.LogDebug("Message received. Input: {@Input}", JsonConvert.SerializeObject(input));
             _characterController.SendAsync(game, this, input).SafeFireAndForget();
