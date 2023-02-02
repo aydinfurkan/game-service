@@ -13,6 +13,7 @@ public class VerificationCommandHandler: AsyncRequestHandler<ClientInputCommand<
     private readonly Server _server;
     private readonly IUserAntiCorruption _userAntiCorruption;
     private readonly ILogger<VerificationCommandHandler> _logger;
+    private readonly Guid PickFirstTestId = new Guid("211b8108-bec2-4703-9fb2-6024236a24d3");
     
     public VerificationCommandHandler(
         IUserAntiCorruption userAntiCorruption, 
@@ -43,6 +44,11 @@ public class VerificationCommandHandler: AsyncRequestHandler<ClientInputCommand<
         
         var character = user.CharacterList.FirstOrDefault(x => x.Id == input.CharacterId);
 
+        if (input.CharacterId == PickFirstTestId)
+        {
+            character = user.CharacterList.FirstOrDefault();
+        }
+        
         if (character == null)
         {
             return; // TODO exception
